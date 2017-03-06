@@ -6,6 +6,7 @@ import org.molgenis.data.support.StaticEntity;
 import org.molgenis.security.owned.OwnedEntityType;
 import org.molgenis.util.ValueLabel;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -136,10 +137,15 @@ public class ImportRun extends StaticEntity
 		set(IMPORTEDENTITIES, importedEntities);
 	}
 
+	/**
+	 * @return boolean indicating the value the 'notify' attribute.
+	 * If no value is set for the notify attribute, false is returned as default value.
+	 *
+	 */
 	public boolean getNotify()
 	{
 		Boolean notify = getBoolean(NOTIFY);
-		return notify != null ? notify : null;
+		return notify != null ? notify : false;
 	}
 
 	public void setNotify(boolean notify)
