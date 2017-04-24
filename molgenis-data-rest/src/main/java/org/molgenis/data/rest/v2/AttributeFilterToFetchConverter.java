@@ -153,6 +153,10 @@ public class AttributeFilterToFetchConverter
 	{
 		boolean hasRefAttr = false;
 		Fetch fetch = new Fetch();
+		if(entityType == null){
+			System.out.println("It is null !!!!");
+		}
+
 		for (Attribute attr : entityType.getAtomicAttributes())
 		{
 			Fetch subFetch = createDefaultAttributeFetch(attr, languageCode);
