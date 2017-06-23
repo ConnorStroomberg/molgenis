@@ -37,6 +37,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
 import static org.molgenis.data.EntityManager.CreationMode.POPULATE;
+import static org.molgenis.data.meta.AttributeType.FILE;
 import static org.molgenis.data.meta.AttributeType.ONE_TO_MANY;
 import static org.molgenis.file.model.FileMetaMetaData.FILE_META;
 import static org.molgenis.util.MolgenisDateFormat.*;
@@ -73,6 +74,12 @@ public class RestService
 	{
 		final Entity entity = entityManager.create(meta, POPULATE);
 
+		Attribute idAttribute = meta.getIdAttribute();
+		Object idValue = request.get(idAttribute.getName());
+		entity.set(idAttribute.getName(), this.toEntityValue(idAttribute, idValue));
+		request.remove(idAttribute.getName());
+		Entity oldEntity = dataService.findOneById(entity.getEntityType().getId(), entity.getIdValue());
+
 		for (Attribute attr : meta.getAtomicAttributes())
 		{
 			if (attr.getExpression() == null)
@@ -81,13 +88,36 @@ public class RestService
 				if (request.containsKey(paramName))
 				{
 					final Object paramValue = request.get(paramName);
-					final Object value = this.toEntityValue(attr, paramValue);
+
+					final Object value;
+
+					if(isUpdateWithNonUpdatedFileAttribute(oldEntity, attr, paramValue)){
+						value = oldEntity.getEntity(attr.getName());
+					} else {
+						value = this.toEntityValue(attr, paramValue);
+					}
+
 					entity.set(attr.getName(), value);
 				}
 			}
 		}
 
 		return entity;
+	}
+
+	private boolean isUpdateWithNonUpdatedFileAttribute(Entity entity, Attribute attr, Object paramValue) {
+
+		if( attr.getDataType().equals(FILE) && paramValue instanceof String) {
+			Entity currentValue = entity.getEntity(attr.getName());
+			if (!(currentValue instanceof FileMeta)){
+				throw new MolgenisDataException("attribute data type (File) does not match attribute type value");
+			}
+			String fileName = ((FileMeta) currentValue).getFilename();
+			if(fileName.equals(paramValue)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
