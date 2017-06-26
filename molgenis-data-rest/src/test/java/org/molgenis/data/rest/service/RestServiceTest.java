@@ -12,6 +12,7 @@ import org.molgenis.data.populate.IdGenerator;
 import org.molgenis.file.FileStore;
 import org.molgenis.file.model.FileMeta;
 import org.molgenis.file.model.FileMetaFactory;
+import org.molgenis.file.model.FileMetaMetaData;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
@@ -169,7 +170,35 @@ public class RestServiceTest
 		byte [] content = {'a', 'b'};
 		MockMultipartFile mockMultipartFile = new MockMultipartFile("name", "fileName", "contentType", content);
 
-		assertEquals(restService.toEntityValue(fileAttr, mockMultipartFile), fileMeta);
+		assertEquals(restService.toEntityValue(fileAttr, mockMultipartFile, null), fileMeta);
+	}
+
+	@Test
+	public void toEntityFileValueWithoutFileInRequest() throws ParseException
+	{
+		int entityId = 12345;
+		String fileName = "File name";
+		String fileAttrName = "fileAttr";
+		String oldEntityTypeId = "oldEntityTypeId";
+
+		EntityType oldEntityType = mock(EntityType.class);
+		Entity oldEntity = mock(Entity.class);
+		FileMeta storedFileMeta = mock(FileMeta.class);
+		Attribute fileAttr = mock(Attribute.class);
+		Attribute idAttr = mock(Attribute.class);
+
+		when(fileAttr.getName()).thenReturn(fileAttrName);
+		when(fileAttr.getEntity()).thenReturn(oldEntityType);
+		when(fileAttr.getDataType()).thenReturn(FILE);
+		when(oldEntityType.getId()).thenReturn(oldEntityTypeId);
+		when(oldEntityType.getIdAttribute()).thenReturn(idAttr);
+		when(idAttr.getDataType()).thenReturn(INT);
+		when(oldEntity.getEntity(fileAttrName)).thenReturn(storedFileMeta);
+		when(storedFileMeta.get(FileMetaMetaData.FILENAME)).thenReturn(fileName);
+		when(dataService.findOneById(fileAttr.getEntity().getId(), entityId)).thenReturn(oldEntity);
+
+		Object result = restService.toEntityValue(fileAttr, fileName, entityId);
+		assertEquals(result, storedFileMeta);
 	}
 
 	@Test(expectedExceptions = MolgenisDataException.class, expectedExceptionsMessageRegExp = "Failed to parse attribute \\[dateAttr\\] value \\[invalidDate\\] as date. Valid date format is \\[YYYY-MM-DD\\].")

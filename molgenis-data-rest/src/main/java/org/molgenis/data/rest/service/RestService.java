@@ -13,7 +13,6 @@ import org.molgenis.file.FileDownloadController;
 import org.molgenis.file.FileStore;
 import org.molgenis.file.model.FileMeta;
 import org.molgenis.file.model.FileMetaFactory;
-import org.molgenis.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -225,16 +224,30 @@ public class RestService
 
 	private FileMeta convertFile(Attribute attr, Object paramValue, Object entityId)
 	{
-		Entity oldEntity = dataService.findOneById(attr.getEntity().getId(), entityId);
 		FileMeta value;
 		if (paramValue != null)
 		{
+			/*
+			 * If an entity is updated and no new file is passed, use the old file value
+			 */
 			if (!(paramValue instanceof MultipartFile))
 			{
-				if (paramValue instanceof String && oldEntity.getEntity(attr.getName()).get(FILENAME)
-						.equals(paramValue))
+
+				EntityType entityType = attr.getEntity();
+				Attribute idAttribute = entityType.getIdAttribute();
+				Object idValue = this.toEntityValue(idAttribute, entityId, null);
+				Entity oldEntity = dataService.findOneById(entityType.getId(), idValue);
+
+				if (paramValue instanceof String)
 				{
-					value = (FileMeta) oldEntity.getEntity(attr.getName());
+					FileMeta entity = (FileMeta) oldEntity.getEntity(attr.getName());
+					if (entity.get(FILENAME).equals(paramValue))
+					{
+						value = entity;
+					} else {
+						throw new MolgenisDataException("Cannot update entity with file attribute without passing file,"
+								+ " while changing the name of the existing file attribute");
+					}
 				}
 				else
 				{
@@ -257,14 +270,15 @@ public class RestService
 					throw new MolgenisDataException(e);
 				}
 
-			FileMeta fileEntity = fileMetaFactory.create(id);
-			fileEntity.setFilename(multipartFile.getOriginalFilename());
-			fileEntity.setContentType(multipartFile.getContentType());
-			fileEntity.setSize(multipartFile.getSize());
-			ServletUriComponentsBuildercurrentRequest = servletUriComponentsBuilderFactory.fromCurrentRequest();
-					UriComponents downloadUri = currentRequest.replacePath(FileDownloadController.URI + '/' + id).replaceQuery(null).build();
-			fileEntity.setUrl(downloadUri.toUriString());
-			dataService.add(FILE_META, fileEntity);
+				FileMeta fileEntity = fileMetaFactory.create(id);
+				fileEntity.setFilename(multipartFile.getOriginalFilename());
+				fileEntity.setContentType(multipartFile.getContentType());
+				fileEntity.setSize(multipartFile.getSize());
+				ServletUriComponentsBuilder currentRequest = servletUriComponentsBuilderFactory.fromCurrentRequest();
+				UriComponents downloadUri = currentRequest.replacePath(FileDownloadController.URI + '/' + id)
+						.replaceQuery(null).build();
+				fileEntity.setUrl(downloadUri.toUriString());
+				dataService.add(FILE_META, fileEntity);
 
 				value = fileEntity;
 			}
