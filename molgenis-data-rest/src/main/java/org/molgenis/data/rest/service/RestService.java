@@ -83,9 +83,9 @@ public class RestService
 				if (request.containsKey(paramName))
 				{
 					final Object paramValue = request.get(paramName);
-					final Object value = this.toEntityValue(attr, paramValue, EntityUtils
-							.getTypedValue(request.get(meta.getIdAttribute().getName()).toString(),
-									meta.getIdAttribute()));
+					Attribute idAttribute = meta.getIdAttribute();
+					Object idValue = request.get(idAttribute.getName());
+					final Object value = this.toEntityValue(attr, paramValue, idValue);
 					entity.set(attr.getName(), value);
 				}
 			}
