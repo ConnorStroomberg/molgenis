@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponents;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,16 +52,19 @@ public class RestService
 	private final FileStore fileStore;
 	private final FileMetaFactory fileMetaFactory;
 	private final EntityManager entityManager;
+	private final ServletUriComponentsBuilderFactory servletUriComponentsBuilderFactory;
 
 	@Autowired
 	public RestService(DataService dataService, IdGenerator idGenerator, FileStore fileStore,
-			FileMetaFactory fileMetaFactory, EntityManager entityManager)
+			FileMetaFactory fileMetaFactory, EntityManager entityManager,
+			ServletUriComponentsBuilderFactory servletUriComponentsBuilderFactory)
 	{
 		this.dataService = requireNonNull(dataService);
 		this.idGenerator = requireNonNull(idGenerator);
 		this.fileStore = requireNonNull(fileStore);
 		this.fileMetaFactory = requireNonNull(fileMetaFactory);
 		this.entityManager = requireNonNull(entityManager);
+		this.servletUriComponentsBuilderFactory = requireNonNull(servletUriComponentsBuilderFactory);
 	}
 
 	/**
@@ -253,13 +257,14 @@ public class RestService
 					throw new MolgenisDataException(e);
 				}
 
-				FileMeta fileEntity = fileMetaFactory.create(id);
-				fileEntity.setFilename(multipartFile.getOriginalFilename());
-				fileEntity.setContentType(multipartFile.getContentType());
-				fileEntity.setSize(multipartFile.getSize());
-				fileEntity.setUrl(ServletUriComponentsBuilder.fromCurrentRequest()
-						.replacePath(FileDownloadController.URI + '/' + id).replaceQuery(null).build().toUriString());
-				dataService.add(FILE_META, fileEntity);
+			FileMeta fileEntity = fileMetaFactory.create(id);
+			fileEntity.setFilename(multipartFile.getOriginalFilename());
+			fileEntity.setContentType(multipartFile.getContentType());
+			fileEntity.setSize(multipartFile.getSize());
+			ServletUriComponentsBuildercurrentRequest = servletUriComponentsBuilderFactory.fromCurrentRequest();
+					UriComponents downloadUri = currentRequest.replacePath(FileDownloadController.URI + '/' + id).replaceQuery(null).build();
+			fileEntity.setUrl(downloadUri.toUriString());
+			dataService.add(FILE_META, fileEntity);
 
 				value = fileEntity;
 			}
