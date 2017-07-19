@@ -1,16 +1,18 @@
 package org.molgenis.oneclickimporter.controller;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.molgenis.data.MolgenisDataException;
 import org.molgenis.data.i18n.LanguageService;
+import org.molgenis.data.jobs.JobExecutor;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.settings.AppSettings;
 import org.molgenis.file.FileStore;
 import org.molgenis.oneclickimporter.exceptions.UnknownFileTypeException;
-import org.molgenis.oneclickimporter.model.DataCollection;
+import org.molgenis.oneclickimporter.model.ImportJobExecution;
+import org.molgenis.oneclickimporter.model.ImportJobExecutionFactory;
 import org.molgenis.oneclickimporter.service.EntityService;
 import org.molgenis.oneclickimporter.service.ExcelService;
+import org.molgenis.oneclickimporter.service.Impl.ImportJobServiceImpl;
 import org.molgenis.oneclickimporter.service.OneClickImporterService;
 import org.molgenis.ui.MolgenisPluginController;
 import org.molgenis.ui.menu.MenuReaderService;
@@ -27,6 +29,7 @@ import java.io.IOException;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
+import static org.molgenis.data.support.Href.concatEntityHref;
 import static org.molgenis.oneclickimporter.controller.OneClickImporterController.URI;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -43,23 +46,21 @@ public class OneClickImporterController extends MolgenisPluginController
 	private MenuReaderService menuReaderService;
 	private LanguageService languageService;
 	private AppSettings appSettings;
-	private OneClickImporterService oneClickImporterService;
-	private ExcelService excelService;
-	private EntityService entityService;
 	private FileStore fileStore;
+	private ImportJobExecutionFactory importJobExecutionFactory;
+	private JobExecutor jobExecutor;
+
 
 	public OneClickImporterController(MenuReaderService menuReaderService, LanguageService languageService,
-			AppSettings appSettings, ExcelService excelService, OneClickImporterService oneClickImporterService,
-			EntityService entityService, FileStore fileStore)
+			AppSettings appSettings, FileStore fileStore,ImportJobExecutionFactory importJobExecutionFactory, JobExecutor jobExecutor )
 	{
 		super(URI);
 		this.menuReaderService = requireNonNull(menuReaderService);
 		this.languageService = requireNonNull(languageService);
 		this.appSettings = requireNonNull(appSettings);
-		this.excelService = requireNonNull(excelService);
-		this.oneClickImporterService = requireNonNull(oneClickImporterService);
-		this.entityService = requireNonNull(entityService);
 		this.fileStore = requireNonNull(fileStore);
+		this.importJobExecutionFactory = requireNonNull(importJobExecutionFactory);
+		this.jobExecutor = jobExecutor;
 	}
 
 	@RequestMapping(method = GET)
@@ -74,35 +75,26 @@ public class OneClickImporterController extends MolgenisPluginController
 
 	@ResponseBody
 	@RequestMapping(value = "/upload", method = POST, produces = APPLICATION_JSON_VALUE)
-	public OneClickImportResponse importFile(HttpServletResponse response, @RequestParam(value = "file") MultipartFile multipartFile)
+	public String importFile(HttpServletResponse response, @RequestParam(value = "file") MultipartFile multipartFile)
 			throws UnknownFileTypeException, IOException, InvalidFormatException
 	{
 		String filename = multipartFile.getOriginalFilename();
-		File file = fileStore.store(multipartFile.getInputStream(), filename);
+		fileStore.store(multipartFile.getInputStream(), filename);
 
-		String fileExtension = filename.substring(filename.lastIndexOf('.') + 1);
-		String dataCollectionName = filename.substring(0, filename.lastIndexOf('.'));
-
-		DataCollection dataCollection;
-		if (fileExtension.equals("xls") || fileExtension.equals("xlsx"))
-		{
-			Sheet sheet = excelService.buildExcelSheetFromFile(file);
-			dataCollection = oneClickImporterService.buildDataCollection(dataCollectionName, sheet);
-		}
-		else
-		{
-			throw new UnknownFileTypeException(
-					String.format("File with extension: %s is not a valid one-click importer file", fileExtension));
-		}
-
-		EntityType dataTable = entityService.createEntity(dataCollection);
+		ImportJobExecution jobExecution = importJobExecutionFactory.create();
+		jobExecution.setFileName(filename);
+		jobExecution.setUser("user");
+		jobExecutor.submit(jobExecution);
+		String jobHref = concatEntityHref(jobExecution);
 
 		ServletUriComponentsBuilder builder = ServletUriComponentsBuilder.fromCurrentRequestUri();
 		response.setStatus(HttpServletResponse.SC_CREATED);
-		response.setHeader("Location", builder.build().toUriString() + "/" + dataTable.getId());
+		response.setHeader("Location", jobHref);
 
-		return new OneClickImportResponse(dataTable.getId(), file.getName());
+		return jobHref;
 	}
+
+
 
 	@ResponseBody
 	@ResponseStatus(BAD_REQUEST)
