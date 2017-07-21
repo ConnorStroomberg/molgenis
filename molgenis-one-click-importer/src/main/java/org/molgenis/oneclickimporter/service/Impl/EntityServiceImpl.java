@@ -11,23 +11,26 @@ import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.populate.IdGenerator;
-import org.molgenis.oneclickimporter.controller.OneClickImporterController;
+import org.molgenis.data.support.AttributeUtils;
 import org.molgenis.oneclickimporter.model.Column;
 import org.molgenis.oneclickimporter.model.DataCollection;
+import org.molgenis.oneclickimporter.service.AttributeTypeService;
 import org.molgenis.oneclickimporter.service.EntityService;
 import org.molgenis.oneclickimporter.service.OneClickImporterService;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Objects.requireNonNull;
-import static org.molgenis.data.meta.AttributeType.*;
+import static org.molgenis.data.EntityManager.CreationMode.NO_POPULATE;
+import static org.molgenis.data.meta.model.EntityType.AttributeRole.ROLE_ID;
 
 @Component
 public class EntityServiceImpl implements EntityService
 {
-	public static final String ID_ATTR_NAME = "id_";
+	private static final String ID_ATTR_NAME = "auto_identifier";
 
 	private final DefaultPackage defaultPackage;
 
@@ -39,78 +42,120 @@ public class EntityServiceImpl implements EntityService
 
 	private final DataService dataService;
 
+	private final MetaDataService metaDataService;
+
 	private final EntityManager entityManager;
+
+	private final AttributeTypeService attributeTypeService;
 
 	private final OneClickImporterService oneClickImporterService;
 
 	public EntityServiceImpl(DefaultPackage defaultPackage, EntityTypeFactory entityTypeFactory,
 			AttributeFactory attributeFactory, IdGenerator idGenerator, DataService dataService,
-			EntityManager entityManager, OneClickImporterService oneClickImporterService)
+			MetaDataService metaDataService, EntityManager entityManager, AttributeTypeService attributeTypeService,
+			OneClickImporterService oneClickImporterService)
 	{
 		this.defaultPackage = requireNonNull(defaultPackage);
 		this.entityTypeFactory = requireNonNull(entityTypeFactory);
 		this.attributeFactory = requireNonNull(attributeFactory);
 		this.idGenerator = requireNonNull(idGenerator);
 		this.dataService = requireNonNull(dataService);
+		this.metaDataService = requireNonNull(metaDataService);
 		this.entityManager = requireNonNull(entityManager);
+		this.attributeTypeService = requireNonNull(attributeTypeService);
 		this.oneClickImporterService = requireNonNull(oneClickImporterService);
 	}
 
 	@Override
-	public EntityType createEntity(DataCollection dataCollection)
+	public EntityType createEntityType(DataCollection dataCollection)
 	{
+		String entityTypeId = idGenerator.generateId();
+
 		// Create a dataTable
 		EntityType entityType = entityTypeFactory.create();
 		entityType.setPackage(defaultPackage);
-		entityType.setId(idGenerator.generateId());
+		entityType.setId(entityTypeId);
 		entityType.setLabel(dataCollection.getName());
 
-		// Add a auto id column
-		Attribute idAttribute = attributeFactory.create()
-												.setName(ID_ATTR_NAME)
-												.setVisible(Boolean.FALSE)
-												.setAuto(Boolean.TRUE)
-												.setIdAttribute(Boolean.TRUE);
-		entityType.addAttribute(idAttribute, EntityType.AttributeRole.ROLE_ID);
+		// Check if first column can be used as id ( has unique values )
+		List<Column> columns = dataCollection.getColumns();
+		Column firstColumn = columns.get(0);
+		final boolean isFirstColumnUnique = oneClickImporterService.hasUniqueValues(firstColumn);
 
-		// Store the dataTable
-		MetaDataService meta = dataService.getMeta();
-		meta.addEntityType(entityType);
+		AttributeType type = attributeTypeService.guessAttributeType(firstColumn.getDataValues());
+		final boolean isValidAttributeType = AttributeUtils.getValidIdAttributeTypes().contains(type);
+		final boolean useAutoId = !isFirstColumnUnique || !isValidAttributeType;
 
-		// Add the columns the the dataTable
-		for (Column column : dataCollection.getColumns())
-		{
-
-			Attribute attribute = attributeFactory.create();
-			attribute.setName(column.getName());
-			attribute.setDataType(oneClickImporterService.guessAttributeType(column.getDataValues()));
-			entityType.addAttribute(attribute);
+		if(useAutoId) {
+			entityType.addAttribute(createIdAttribute(), ROLE_ID);
+		} else {
+			entityType.addAttribute(createAttribute(firstColumn), ROLE_ID);
 		}
 
-		meta.updateEntityType(entityType);
-
-		// Fill the dataTable with data
-		// All columns have a equal number of rows
-		int numberOfRows = dataCollection.getColumns().get(0).getDataValues().size();
-		ArrayList<Entity> rows = new ArrayList<>(numberOfRows);
-		for (int columnIndex = 0; columnIndex < numberOfRows; columnIndex++)
+		// Add all columns to the dataTable
+		columns.forEach(column ->
 		{
+			if(useAutoId || column != firstColumn){
+				Attribute attribute = createAttribute(column);
+				entityType.addAttribute(attribute);
+			}
+		});
 
-			Entity row = entityManager.create(entityType, EntityManager.CreationMode.NO_POPULATE);
-			row.setIdValue(idGenerator.generateId());
+		// Store the dataTable (metadata only)
+		metaDataService.addEntityType(entityType);
 
-			for (Column column : dataCollection.getColumns())
-			{
-				row.set(column.getName(), column.getDataValues().get(columnIndex));
+		AtomicInteger rowIndex = new AtomicInteger(0);
+		List<Entity> rows = newArrayList();
+		while (rowIndex.get() < dataCollection.getColumns().get(0).getDataValues().size())
+		{
+			Entity row = entityManager.create(entityType, NO_POPULATE);
+			if(useAutoId) {
+				row.setIdValue(idGenerator.generateId());
 			}
 
+			final int index = rowIndex.getAndIncrement();
+			columns.forEach(column -> setRowValueForAttribute(row, index, column));
+
 			rows.add(row);
-
 		}
-
 		dataService.add(entityType.getId(), rows.stream());
 
 		return entityType;
 	}
 
+	private void setRowValueForAttribute(Entity row, int index, Column column)
+	{
+		String attributeName = asValidAttributeName(column.getName());
+		Object dataValue = column.getDataValues().get(index);
+
+		EntityType rowType = row.getEntityType();
+		Attribute attribute = rowType.getAttribute(attributeName);
+
+		Object castedValue = oneClickImporterService.castValueAsAttributeType(dataValue, attribute.getDataType());
+		row.set(attributeName, castedValue);
+	}
+
+	private Attribute createIdAttribute()
+	{
+		Attribute idAttribute = attributeFactory.create();
+		idAttribute.setName(ID_ATTR_NAME);
+		idAttribute.setVisible(false);
+		idAttribute.setAuto(true);
+		idAttribute.setIdAttribute(true);
+		return idAttribute;
+	}
+
+	private Attribute createAttribute(Column column)
+	{
+		Attribute attribute = attributeFactory.create();
+		attribute.setName(asValidAttributeName(column.getName()));
+		attribute.setLabel(column.getName());
+		attribute.setDataType(attributeTypeService.guessAttributeType(column.getDataValues()));
+		return attribute;
+	}
+
+	private String asValidAttributeName(String columnName)
+	{
+		return columnName.replace(" ", "_");
+	}
 }

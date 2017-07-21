@@ -14,7 +14,6 @@
     "lint:fix": "eslint --ext .js,.vue src test/unit/specs"
   },
   "dependencies": {
-    "@molgenis/molgenis-api-client": "^2.x.x",
     "@molgenis/molgenis-i18n-js": "^0.0.5",
     "bootstrap": "4.0.0-alpha.6",
     "bootstrap-vue": "^0.18.0",
@@ -23,6 +22,7 @@
     "vue": "^2.2.6",
     "vue-router": "^2.3.1",
     "vue-sweetalert": "^0.1.17",
+    "vue2-dropzone": "^2.3.5",
     "vuex": "^2.2.1",
     "vuex-router-sync": "4.1.2"
   },
