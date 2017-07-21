@@ -68,9 +68,6 @@ public class OneClickImporterControllerTest extends AbstractMockitoTestNGSpringC
 	private ExcelService excelService;
 
 	@Mock
-	private CsvService csvService;
-
-	@Mock
 	private OneClickImporterService oneClickImporterService;
 
 	@Mock
@@ -91,7 +88,7 @@ public class OneClickImporterControllerTest extends AbstractMockitoTestNGSpringC
 		initMocks();
 
 		OneClickImporterController oneClickImporterController = new OneClickImporterController(menuReaderService,
-				languageService,appSettings, fileStore, importJobExecutionFactory, jobExecutor);
+				languageService, appSettings, fileStore, importJobExecutionFactory, jobExecutor);
 
 		Menu menu = mock(Menu.class);
 		when(menu.findMenuItemPath(OneClickImporterController.ONE_CLICK_IMPORTER)).thenReturn("/test-path");

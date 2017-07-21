@@ -57,8 +57,8 @@ public class ImportJobServiceImpl
 					String.format("File with extension: %s is not a valid one-click importer file", fileExtension));
 		}
 
-		EntityType entity = entityService.createEntity(dataCollection);
+		EntityType entityType = entityService.createEntityType(dataCollection);
 		progress.progress(3, "import complete");
-		return entity;
+		return entityType;
 	}
 }

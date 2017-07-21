@@ -4,18 +4,11 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.molgenis.data.MolgenisDataException;
 import org.molgenis.data.i18n.LanguageService;
 import org.molgenis.data.jobs.JobExecutor;
-import org.molgenis.data.meta.model.EntityType;
-import org.molgenis.data.rest.v2.RestControllerV2;
 import org.molgenis.data.settings.AppSettings;
 import org.molgenis.file.FileStore;
 import org.molgenis.oneclickimporter.exceptions.UnknownFileTypeException;
 import org.molgenis.oneclickimporter.model.ImportJobExecution;
 import org.molgenis.oneclickimporter.model.ImportJobExecutionFactory;
-import org.molgenis.oneclickimporter.service.CsvService;
-import org.molgenis.oneclickimporter.service.EntityService;
-import org.molgenis.oneclickimporter.service.ExcelService;
-import org.molgenis.oneclickimporter.service.Impl.ImportJobServiceImpl;
-import org.molgenis.oneclickimporter.service.OneClickImporterService;
 import org.molgenis.ui.MolgenisPluginController;
 import org.molgenis.ui.menu.MenuReaderService;
 import org.molgenis.util.ErrorMessageResponse;
@@ -23,14 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
@@ -52,28 +41,21 @@ public class OneClickImporterController extends MolgenisPluginController
 	private MenuReaderService menuReaderService;
 	private LanguageService languageService;
 	private AppSettings appSettings;
-	private OneClickImporterService oneClickImporterService;
-	private ExcelService excelService;
-	private CsvService csvService;
-	private EntityService entityService;
+
 	private FileStore fileStore;
 	private ImportJobExecutionFactory importJobExecutionFactory;
 	private JobExecutor jobExecutor;
 
 
 	public OneClickImporterController(MenuReaderService menuReaderService, LanguageService languageService,
-			AppSettings appSettings, ExcelService excelService, CsvService csvService,
-			OneClickImporterService oneClickImporterService, EntityService entityService, FileStore fileStore)
-			AppSettings appSettings, FileStore fileStore,ImportJobExecutionFactory importJobExecutionFactory, JobExecutor jobExecutor )
+			AppSettings appSettings, FileStore fileStore, ImportJobExecutionFactory importJobExecutionFactory,
+			JobExecutor jobExecutor)
 	{
 		super(URI);
 		this.menuReaderService = requireNonNull(menuReaderService);
 		this.languageService = requireNonNull(languageService);
 		this.appSettings = requireNonNull(appSettings);
-		this.excelService = requireNonNull(excelService);
-		this.csvService = requireNonNull(csvService);
-		this.oneClickImporterService = requireNonNull(oneClickImporterService);
-		this.entityService = requireNonNull(entityService);
+
 		this.fileStore = requireNonNull(fileStore);
 		this.importJobExecutionFactory = requireNonNull(importJobExecutionFactory);
 		this.jobExecutor = jobExecutor;
@@ -103,16 +85,10 @@ public class OneClickImporterController extends MolgenisPluginController
 		jobExecutor.submit(jobExecution);
 		String jobHref = concatEntityHref(jobExecution);
 
-		ServletUriComponentsBuilder builder = ServletUriComponentsBuilder.fromCurrentRequestUri();
-		final String location = builder.replacePath(RestControllerV2.BASE_URI).toUriString() + "/" + dataTable.getId();
-		response.setStatus(HttpServletResponse.SC_CREATED);
-		response.setHeader("Location", location);
 		response.setHeader("Location", jobHref);
 
-		return OneClickImportResponse.create(dataTable.getId(), file.getName());
 		return jobHref;
 	}
-
 
 
 	@ResponseBody
