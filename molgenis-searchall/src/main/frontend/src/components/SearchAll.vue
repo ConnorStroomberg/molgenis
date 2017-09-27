@@ -45,10 +45,6 @@
     padding-bottom: 15px;
   }
 
-  .no-margin-bottom {
-    margin-bottom: 0px;
-  }
-
   .search-result {
     background-color: yellow;
   }
@@ -70,10 +66,11 @@
       }
     },
     methods: {
-      highlight: function (text) {
-        var iQuery = new RegExp(this.$store.state.query, 'ig')
-        return text.toString().replace(iQuery, function (matchedTxt, a, b) {
-          return ('<b class=\'search-result\'>' + matchedTxt + '</b>')
+      highlight: function (input) {
+        const text = input ? input.toString() : ''
+        const iQuery = new RegExp(this.$store.state.query, 'ig')
+        return text.replace(iQuery, function (matchedTxt) {
+          return ('<b class="search-result">' + matchedTxt + '</b>')
         })
       }
     }
