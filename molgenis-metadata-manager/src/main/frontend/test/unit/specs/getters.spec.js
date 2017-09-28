@@ -164,21 +164,21 @@ describe('getters', () => {
   })
 
   describe('getCompoundAttributes', () => {
-    it('should retrieve all COMPOUND attributes', () => {
+    it('should retrieve all compound attributes', () => {
       const state = {
         editorEntityType: {
           attributes: [
-            { id: '1', type: 'STRING' },
-            { id: '2', type: 'CATEGORICAL' },
-            { id: '3', type: 'XREF' },
-            { id: '4', type: 'COMPOUND' },
-            { id: '5', type: 'INT' }
+            { id: '1', type: 'string' },
+            { id: '2', type: 'categorical' },
+            { id: '3', type: 'xref' },
+            { id: '4', type: 'compound' },
+            { id: '5', type: 'int' }
           ]
         }
       }
 
       const actual = getters.getCompoundAttributes(state)
-      const expected = [{ id: '4', type: 'COMPOUND' }]
+      const expected = [{ id: '4', type: 'compound' }]
 
       expect(actual).to.deep.equal(expected)
     })

@@ -277,16 +277,16 @@
         compoundAttributes: 'getCompoundAttributes'
       }),
       isReferenceType: function () {
-        return ['XREF', 'MREF', 'CATEGORICAL', 'CATEGORICAL_MREF'].includes(this.selectedAttribute.type)
+        return ['xref', 'mref', 'categorical', 'categoricalmref'].includes(this.selectedAttribute.type)
       },
       isNumericType: function () {
-        return ['INT', 'LONG'].includes(this.selectedAttribute.type)
+        return ['int', 'long'].includes(this.selectedAttribute.type)
       },
       isEnumType: function () {
-        return this.selectedAttribute.type === 'ENUM'
+        return this.selectedAttribute.type === 'enum'
       },
       isOneToManyType: function () {
-        return this.selectedAttribute.type === 'ONETOMANY'
+        return this.selectedAttribute.type === 'onetomany'
       },
       name: {
         get () {
