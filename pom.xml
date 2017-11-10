@@ -185,6 +185,12 @@
                 <skip.js>true</skip.js>
             </properties>
         </profile>
+        <profile>
+            <id>selenium</id>
+            <modules>
+                <module>molgenis-selenium-tests</module>
+            </modules>
+        </profile>
     </profiles>
 
     <build>
