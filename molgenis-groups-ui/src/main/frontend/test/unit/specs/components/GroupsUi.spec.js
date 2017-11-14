@@ -1,9 +1,9 @@
 import GroupsUi from 'components/GroupsUi.vue'
 
-describe('Groups UI', () => {
+describe('GroupsUi', () => {
   describe('when created', () => {
-    it('should use "Groups UI" as name', () => {
-      expect(GroupsUi.name).to.equal('Groups UI')
+    it('should use "groups-ui" as name', () => {
+      expect(GroupsUi.name).to.equal('groups-ui')
     })
   })
 })

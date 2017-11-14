@@ -6,6 +6,6 @@
 
 <script>
   export default {
-    name: 'groups-ui'
+    name: 'groups-ui-app'
   }
 </script>
