@@ -1,0 +1,4 @@
+// @flow
+// $FlowFixMe
+
+export default {}
