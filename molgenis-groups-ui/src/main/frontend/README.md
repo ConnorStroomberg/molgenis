@@ -1,6 +1,6 @@
 # Groups UI
 
-> its a groups ui for your packages and entities
+> A user interface for managing your groups.
 
 ## Build Setup
 
