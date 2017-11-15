@@ -12,17 +12,17 @@
 
     <!-- Search element -->
     <div id="mg-groups-search-container" class="row">
-      <div class="col-9 input-group">
+      <div class="col-10 input-group">
         <input v-model="searchQuery" type="text" class="form-control" :placeholder="$t('search-input-placeholder')">
         <span class="input-group-btn">
-          <button @click="submitQuery()" class="btn btn-secondary" :disabled="!searchQuery" type="button">{{ 'search-button' | i18n }}</button>
+          <button @click="submitQuery()" class="btn btn-outline-secondary" :disabled="!searchQuery" type="button">{{ 'search-button' | i18n }}</button>
         </span>
         <span class="input-group-btn">
-          <button @click="reset()" class="btn btn-secondary" :disabled="!searchQuery" type="button">{{ 'clear-button' | i18n }}</button>
+          <button @click="reset()" class="btn btn-outline-secondary" :disabled="!searchQuery" type="button">{{ 'clear-button' | i18n }}</button>
         </span>
       </div>
-      <div class="col-lg-3">
-        <button @click="reset()" class="btn btn-primary pull-right" type="button">{{ 'create-group-button' | i18n }}</button>
+      <div class="col-lg-2">
+        <button @click="reset()" class="btn btn-success pull-right" type="button">{{ 'create-group-button' | i18n }}</button>
       </div>
     </div>
 
@@ -30,7 +30,7 @@
     <div id="mg-groups-list" class="mt-3" >
       <div class="row" v-for="group in groups">
         <div class="col-12">
-          <group-card class="mb-3"></group-card>
+          <group-card class="mb-3" v-bind:group="group"></group-card>
         </div>
       </div>
     </div>
@@ -44,6 +44,7 @@
   import _ from 'lodash'
   import { SET_ERROR } from '../store/mutations'
   import { INITIAL_STATE } from '../store/state'
+  import { GET_REPOSITORY_BY_USER } from '../store/actions'
 
   import GroupCard from './GroupCard.vue'
 
@@ -52,11 +53,7 @@
     data () {
       return {
         homeUrl: INITIAL_STATE.baseUrl,
-        searchQuery: '',
-        groups: [
-          { label: 'Foo' },
-          { label: 'Bar' }
-        ]
+        searchQuery: ''
       }
     },
     methods: {
@@ -68,6 +65,11 @@
       }
     },
     computed: {
+      groups: {
+        get () {
+          return this.$store.state.repositories
+        }
+      },
       error: {
         get () {
           return this.$store.state.error
@@ -76,6 +78,9 @@
           this.$store.commit(SET_ERROR, error)
         }
       }
+    },
+    mounted: function () {
+      this.$store.dispatch(GET_REPOSITORY_BY_USER)
     },
     components: {
       GroupCard
