@@ -52,11 +52,6 @@ public class AccountServiceImplTest
 	private RegisterRequest registerRequest;
 	private MockitoSession mockito;
 
-	public AccountServiceImplTest()
-	{
-		super(Strictness.WARN);
-	}
-
 	@BeforeMethod
 	public void setUp()
 	{

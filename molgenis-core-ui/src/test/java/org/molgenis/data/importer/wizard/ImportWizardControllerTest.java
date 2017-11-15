@@ -2,9 +2,7 @@ package org.molgenis.data.importer.wizard;
 
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.quality.Strictness;
-import org.molgenis.auth.*;
 import org.molgenis.data.*;
 import org.molgenis.data.importer.*;
 import org.molgenis.data.importer.config.ImportTestConfig;
@@ -224,9 +222,6 @@ public class ImportWizardControllerTest extends AbstractMolgenisSpringTest
 	@Import({ ImportTestConfig.class })
 	static class Config
 	{
-		@Autowired
-		private DataService dataService;
-
 		@Bean
 		public PasswordEncoder passwordEncoder()
 		{

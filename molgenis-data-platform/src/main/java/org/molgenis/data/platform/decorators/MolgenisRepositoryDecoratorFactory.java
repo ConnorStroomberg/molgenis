@@ -46,6 +46,7 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 	private final PlatformTransactionManager transactionManager;
 	private final QueryValidator queryValidator;
 	private final PermissionService permissionService;
+	private final DefaultValueReferenceValidator defaultValueReferenceValidator;
 
 	public MolgenisRepositoryDecoratorFactory(EntityManager entityManager,
 			EntityAttributesValidator entityAttributesValidator, AggregateAnonymizer aggregateAnonymizer,
@@ -55,7 +56,8 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 			IndexedRepositoryDecoratorFactory indexedRepositoryDecoratorFactory, L1Cache l1Cache, L2Cache l2Cache,
 			TransactionInformation transactionInformation, EntityListenersService entityListenersService,
 			L3Cache l3Cache, PlatformTransactionManager transactionManager, QueryValidator queryValidator,
-			PermissionService permissionService)
+			PermissionService permissionService,
+			DefaultValueReferenceValidator defaultValueReferenceValidator)
 
 	{
 		this.entityManager = requireNonNull(entityManager);
@@ -74,6 +76,7 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 		this.transactionManager = requireNonNull(transactionManager);
 		this.queryValidator = requireNonNull(queryValidator);
 		this.permissionService = requireNonNull(permissionService);
+		this.defaultValueReferenceValidator = defaultValueReferenceValidator;
 	}
 
 	@Override

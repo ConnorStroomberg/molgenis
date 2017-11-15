@@ -67,6 +67,9 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 	@Autowired
 	private MappingTargetMetaData mappingTargetMeta;
 
+	@Autowired
+	private UserService userService;
+
 	@Mock
 	private UserEntity ownerEntity;
 
@@ -201,9 +204,6 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 	public static class Config
 	{
 		@Autowired
-		private DataService dataService;
-
-		@Autowired
 		private MappingProjectMetaData mappingProjectMeta;
 
 		@Bean
@@ -225,10 +225,22 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 		}
 
 		@Bean
+		public UserService userService()
+		{
+			return mock(UserService.class);
+		}
+
+		@Bean
+		public DataService dataService()
+		{
+			return mock(DataService.class);
+		}
+
+		@Bean
 		public MappingProjectRepositoryImpl mappingProjectRepositoryImpl()
 		{
-			return new MappingProjectRepositoryImpl(dataService, mappingTargetRepository(), idGenerator(),
-					mappingProjectMeta, userFactory());
+			return new MappingProjectRepositoryImpl(dataService(), mappingTargetRepository(), idGenerator(),
+					mappingProjectMeta, userFactory(), userService());
 		}
 
 	}

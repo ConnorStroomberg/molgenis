@@ -4,8 +4,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.quality.Strictness;
-import org.molgenis.auth.User;
-import org.molgenis.auth.UserFactory;
 import org.molgenis.data.*;
 import org.molgenis.data.config.EntityBaseTestConfig;
 import org.molgenis.data.jobs.Progress;

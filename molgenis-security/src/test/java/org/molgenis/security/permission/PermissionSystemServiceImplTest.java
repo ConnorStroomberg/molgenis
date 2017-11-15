@@ -2,10 +2,6 @@ package org.molgenis.security.permission;
 
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.quality.Strictness;
-import org.molgenis.auth.User;
-import org.molgenis.auth.UserAuthority;
-import org.molgenis.auth.UserAuthorityFactory;
 import org.molgenis.data.DataService;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.security.core.service.UserService;

@@ -19,6 +19,7 @@ import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.system.SystemPackageRegistry;
 import org.molgenis.data.populate.IdGenerator;
 import org.molgenis.data.security.model.UserFactory;
+import org.molgenis.data.security.service.impl.UserServiceImpl;
 import org.molgenis.data.semanticsearch.service.OntologyTagService;
 import org.molgenis.data.semanticsearch.service.SemanticSearchService;
 import org.molgenis.js.magma.JsMagmaScriptEvaluator;
@@ -81,6 +82,9 @@ public class MappingConfig
 	@Autowired
 	UserFactory userFactory;
 
+	@Autowired
+	UserService userService;
+
 	@Bean
 	public MappingService mappingService()
 	{
@@ -111,7 +115,7 @@ public class MappingConfig
 	public MappingProjectRepositoryImpl mappingProjectRepository()
 	{
 		return new MappingProjectRepositoryImpl(dataService, mappingTargetRepository(), idGenerator,
-				mappingProjectMeta, userFactory);
+				mappingProjectMeta, userFactory, userService);
 	}
 
 	@Bean

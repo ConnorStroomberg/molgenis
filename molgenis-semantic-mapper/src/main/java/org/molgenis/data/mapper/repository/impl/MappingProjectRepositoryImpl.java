@@ -30,16 +30,18 @@ public class MappingProjectRepositoryImpl implements MappingProjectRepository
 	private final IdGenerator idGenerator;
 	private final MappingProjectMetaData mappingProjectMeta;
 	private final UserFactory userFactory;
+	private final UserService userService;
 
 	public MappingProjectRepositoryImpl(DataService dataService, MappingTargetRepository mappingTargetRepo,
 			IdGenerator idGenerator, MappingProjectMetaData mappingProjectMeta,
-			UserFactory userFactory)
+			UserFactory userFactory, UserService userService)
 	{
 		this.dataService = requireNonNull(dataService);
 		this.mappingTargetRepo = requireNonNull(mappingTargetRepo);
 		this.idGenerator = requireNonNull(idGenerator);
 		this.mappingProjectMeta = requireNonNull(mappingProjectMeta);
 		this.userFactory = requireNonNull(userFactory);
+		this.userService = userService;
 	}
 
 	@Override

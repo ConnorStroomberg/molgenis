@@ -3,7 +3,6 @@ package org.molgenis.gavin.controller;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.quality.Strictness;
-import org.molgenis.auth.User;
 import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.DataService;
 import org.molgenis.data.annotation.core.EffectBasedAnnotator;
