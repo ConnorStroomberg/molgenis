@@ -953,6 +953,7 @@
         <module>molgenis-file-ingester</module>
         <module>molgenis-gavin</module>
         <module>molgenis-genomebrowser</module>
+        <module>molgenis-groups-ui</module>
         <module>molgenis-jobs</module>
         <module>molgenis-js</module>
         <module>molgenis-metadata-manager</module>
