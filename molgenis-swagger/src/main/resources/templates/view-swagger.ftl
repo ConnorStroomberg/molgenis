@@ -525,6 +525,7 @@ paths:
               description: The HREF where the mapping job can be found
               type: string
               format: uri
+
 definitions:
   SearchAllResult:
     type: object

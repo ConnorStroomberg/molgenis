@@ -2,7 +2,6 @@ package org.molgenis.ontology.sorta.controller;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
-import org.molgenis.auth.User;
 import org.molgenis.data.*;
 import org.molgenis.data.QueryRule.Operator;
 import org.molgenis.data.csv.CsvWriter;
@@ -35,9 +34,10 @@ import org.molgenis.ontology.sorta.service.impl.SortaServiceImpl;
 import org.molgenis.ontology.utils.SortaServiceUtil;
 import org.molgenis.security.core.Permission;
 import org.molgenis.security.core.PermissionService;
+import org.molgenis.security.core.model.User;
 import org.molgenis.security.core.runas.RunAsSystemAspect;
+import org.molgenis.security.core.service.UserAccountService;
 import org.molgenis.security.permission.PermissionSystemService;
-import org.molgenis.security.user.UserAccountService;
 import org.molgenis.ui.menu.MenuReaderService;
 import org.molgenis.web.PluginController;
 import org.slf4j.Logger;
@@ -80,16 +80,7 @@ import static org.molgenis.ontology.utils.SortaServiceUtil.getEntityAsMap;
 @RequestMapping(URI)
 public class SortaController extends PluginController
 {
-	private static final Logger LOG = LoggerFactory.getLogger(SortaController.class);
-
-	public static final String ID = "sorta";
-	public static final String URI = PluginController.PLUGIN_URI_PREFIX + ID;
-
 	private static final int BATCH_SIZE = 1000;
-	private static final String MODEL_KEY_MESSAGE = "message";
-	public static final String MATCH_VIEW_NAME = "sorta-match-view";
-	public static final double DEFAULT_THRESHOLD = 100.0;
-
 	private final OntologyService ontologyService;
 	private final SortaService sortaService;
 	private final DataService dataService;
@@ -504,7 +495,6 @@ public class SortaController extends PluginController
 		query.sort().on(JobExecutionMetaData.START_DATE, DESC);
 		RunAsSystemAspect.runAsSystem(() -> query.findAll().forEach(job ->
 		{
-			// TODO: fetch the user as well
 			job.set(JobExecutionMetaData.USER, currentUser.getUsername());
 			jobs.add(job);
 		}));
@@ -518,7 +508,7 @@ public class SortaController extends PluginController
 		SortaJobExecution sortaJobExecution = sortaJobExecutionFactory.create();
 		sortaJobExecution.setIdentifier(resultEntityName);
 		sortaJobExecution.setName(jobName);
-		sortaJobExecution.setUser(userAccountService.getCurrentUser());
+		sortaJobExecution.setUser(userAccountService.getCurrentUser().getUsername());
 		sortaJobExecution.setSourceEntityName(inputData.getName());
 		sortaJobExecution.setDeleteUrl(getSortaServiceMenuUrl() + "/delete/" + resultEntityName);
 		sortaJobExecution.setResultEntityName(resultEntityName);

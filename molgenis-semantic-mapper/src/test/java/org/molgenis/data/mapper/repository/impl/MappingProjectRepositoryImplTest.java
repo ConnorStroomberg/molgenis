@@ -1,8 +1,7 @@
 package org.molgenis.data.mapper.repository.impl;
 
 import org.mockito.ArgumentCaptor;
-import org.molgenis.auth.User;
-import org.molgenis.auth.UserFactory;
+import org.mockito.Mock;
 import org.molgenis.data.*;
 import org.molgenis.data.mapper.config.MapperTestConfig;
 import org.molgenis.data.mapper.mapping.model.MappingProject;
@@ -14,8 +13,12 @@ import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.populate.IdGenerator;
+import org.molgenis.data.security.model.UserEntity;
+import org.molgenis.data.security.model.UserFactory;
 import org.molgenis.data.support.DynamicEntity;
 import org.molgenis.data.support.QueryImpl;
+import org.molgenis.security.core.model.User;
+import org.molgenis.security.core.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +35,6 @@ import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.*;
 import static org.molgenis.data.mapper.meta.MappingProjectMetaData.*;
 import static org.molgenis.data.meta.model.EntityType.AttributeRole.ROLE_ID;
-import static org.molgenis.data.meta.model.TagMetadata.TAG;
 import static org.testng.Assert.*;
 
 @ContextConfiguration(classes = MappingProjectRepositoryImplTest.Config.class)
@@ -65,7 +67,10 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 	@Autowired
 	private MappingTargetMetaData mappingTargetMeta;
 
-	private User owner;
+	@Mock
+	private UserEntity ownerEntity;
+
+	private final User owner = User.builder().username("flup").password("geheim").email("flup@example.com").build();
 
 	private MappingTarget mappingTarget1;
 
@@ -80,15 +85,6 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 	@BeforeMethod
 	public void beforeMethod()
 	{
-		owner = userFactory.create();
-		owner.setUsername("flup");
-		owner.setPassword("geheim");
-		owner.setId("12345");
-		owner.setActive(true);
-		owner.setEmail("flup@blah.com");
-		owner.setFirstName("Flup");
-		owner.setLastName("de Flap");
-
 		EntityType target1 = entityTypeFactory.create("target1");
 		target1.addAttribute(attrMetaFactory.create().setName("id"), ROLE_ID);
 		EntityType target2 = entityTypeFactory.create("target2");
@@ -109,7 +105,7 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 		mappingProjectEntity = new DynamicEntity(mappingProjectMeta);
 		mappingProjectEntity.set(IDENTIFIER, "mappingProjectID");
 		mappingProjectEntity.set(MAPPING_TARGETS, mappingTargetEntities);
-		mappingProjectEntity.set(OWNER, owner);
+		mappingProjectEntity.set(OWNER, ownerEntity);
 		mappingProjectEntity.set(NAME, "My first mapping project");
 	}
 
@@ -117,12 +113,14 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 	public void testAdd()
 	{
 		when(idGenerator.generateId()).thenReturn("mappingProjectID");
+		when(userFactory.create()).thenReturn(ownerEntity);
 		when(mappingTargetRepository.upsert(asList(mappingTarget1, mappingTarget2))).thenReturn(mappingTargetEntities);
 
 		mappingProjectRepositoryImpl.add(mappingProject);
 
 		ArgumentCaptor<DynamicEntity> argumentCaptor = ArgumentCaptor.forClass(DynamicEntity.class);
 		verify(dataService).add(eq(MAPPING_PROJECT), argumentCaptor.capture());
+		verify(ownerEntity).updateFrom(owner);
 		assertEquals(argumentCaptor.getValue().getString(IDENTIFIER), "mappingProjectID");
 		assertNull(mappingTarget1.getIdentifier());
 		assertNull(mappingTarget2.getIdentifier());
@@ -154,11 +152,15 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 	public void testQuery()
 	{
 		Query<Entity> q = new QueryImpl<>();
-		q.eq(OWNER, "flup");
+		q.eq(OWNER, ownerEntity);
+		when(ownerEntity.getUsername()).thenReturn("flup");
 		when(dataService.findAll(MAPPING_PROJECT, q)).thenReturn(Stream.of(mappingProjectEntity));
 		when(mappingTargetRepository.toMappingTargets(mappingTargetEntities)).thenReturn(
 				asList(mappingTarget1, mappingTarget2));
+		when(userService.findByUsername("flup")).thenReturn(owner);
+
 		List<MappingProject> result = mappingProjectRepositoryImpl.getMappingProjects(q);
+
 		mappingProject.setIdentifier("mappingProjectID");
 		assertEquals(result, singletonList(mappingProject));
 	}
@@ -166,12 +168,14 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 	@Test
 	public void testFindAll()
 	{
-		Query<Entity> q = new QueryImpl<>();
-		q.eq(OWNER, "flup");
 		when(dataService.findAll(MAPPING_PROJECT)).thenReturn(Stream.of(mappingProjectEntity));
+		when(ownerEntity.getUsername()).thenReturn("flup");
+		when(userService.findByUsername("flup")).thenReturn(owner);
 		when(mappingTargetRepository.toMappingTargets(mappingTargetEntities)).thenReturn(
 				asList(mappingTarget1, mappingTarget2));
+
 		List<MappingProject> result = mappingProjectRepositoryImpl.getAllMappingProjects();
+
 		mappingProject.setIdentifier("mappingProjectID");
 		assertEquals(result, singletonList(mappingProject));
 	}
@@ -180,7 +184,7 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 	public void testUpdateUnknown()
 	{
 		mappingProject.setIdentifier("mappingProjectID");
-		when(dataService.findOneById(TAG, "mappingProjectID")).thenReturn(null);
+		when(dataService.findOneById(MAPPING_PROJECT, "mappingProjectID")).thenReturn(null);
 		try
 		{
 			mappingProjectRepositoryImpl.update(mappingProject);
@@ -215,10 +219,16 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 		}
 
 		@Bean
+		public UserFactory userFactory()
+		{
+			return mock(UserFactory.class);
+		}
+
+		@Bean
 		public MappingProjectRepositoryImpl mappingProjectRepositoryImpl()
 		{
 			return new MappingProjectRepositoryImpl(dataService, mappingTargetRepository(), idGenerator(),
-					mappingProjectMeta);
+					mappingProjectMeta, userFactory());
 		}
 
 	}

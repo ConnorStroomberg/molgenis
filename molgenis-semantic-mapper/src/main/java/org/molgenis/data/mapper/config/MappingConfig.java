@@ -18,12 +18,14 @@ import org.molgenis.data.meta.DefaultPackage;
 import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.system.SystemPackageRegistry;
 import org.molgenis.data.populate.IdGenerator;
+import org.molgenis.data.security.model.UserFactory;
 import org.molgenis.data.semanticsearch.service.OntologyTagService;
 import org.molgenis.data.semanticsearch.service.SemanticSearchService;
 import org.molgenis.js.magma.JsMagmaScriptEvaluator;
 import org.molgenis.ontology.core.config.OntologyConfig;
 import org.molgenis.ontology.core.repository.OntologyTermRepository;
 import org.molgenis.ontology.core.service.OntologyService;
+import org.molgenis.security.core.service.UserService;
 import org.molgenis.security.permission.PermissionSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -76,6 +78,9 @@ public class MappingConfig
 	@Autowired
 	SystemPackageRegistry systemPackageRegistry;
 
+	@Autowired
+	UserFactory userFactory;
+
 	@Bean
 	public MappingService mappingService()
 	{
@@ -106,7 +111,7 @@ public class MappingConfig
 	public MappingProjectRepositoryImpl mappingProjectRepository()
 	{
 		return new MappingProjectRepositoryImpl(dataService, mappingTargetRepository(), idGenerator,
-				mappingProjectMeta);
+				mappingProjectMeta, userFactory);
 	}
 
 	@Bean
