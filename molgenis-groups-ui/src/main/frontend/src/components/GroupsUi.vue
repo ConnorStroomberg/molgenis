@@ -21,7 +21,7 @@
           <button @click="reset()" class="btn btn-outline-secondary" :disabled="!searchQuery" type="button">{{ 'clear-button' | i18n }}</button>
         </span>
       </div>
-      <div class="col-lg-2">
+      <div v-if="isSuperUser" class="col-lg-2">
         <button @click="reset()" class="btn btn-success pull-right" type="button">{{ 'create-group-button' | i18n }}</button>
       </div>
     </div>
@@ -65,6 +65,7 @@
       }
     },
     computed: {
+      isSuperUser: () => true, // INITIAL_STATE.isSuperUser,
       groups: {
         get () {
           return this.$store.state.repositories
