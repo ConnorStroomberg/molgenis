@@ -5,8 +5,8 @@
         <h4 class="card-title">{{ group.label }}</h4>
         <h6 class="card-subtitle mb-2 text-muted">{{ roleLabel }}</h6>
         <p class="card-text">{{ group.description }}</p>
-        <a href="#" class="btn btn-primary">View data</a>
-        <a href="#" class="btn btn-primary">View members</a>
+        <a :href="dataRootUrl" class="btn btn-primary">View data</a>
+        <a :href="membersViewUrl" class="btn btn-primary">View members</a>
         <button v-if="isGroupOwner" @click="deleteRepository()" type="button" class="btn btn-danger pull-right">Delete Group</button>
       </div>
     </div>
@@ -27,6 +27,13 @@
       roleLabel: function () {
         // compute role label from group id and current user
         return 'role label placeholder'
+      },
+      dataRootUrl: function () {
+        const dataRootPath = '' // build path to root folder using group.rootFolderId or precompute it and just use it.
+        return '/menu/main/navigator/' + dataRootPath
+      },
+      membersViewUrl: function () {
+        return '/menu/main/members/' + this.group.groupRootId
       }
     },
     methods: {

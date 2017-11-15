@@ -15,7 +15,9 @@ let groups = [
              Pork belly brooklyn next level vice, tote bag blog master cleanse vape austin YOLO waistcoat lomo
              gochujang distillery. Cray sartorial pok pok bitters gochujang, pug synth tousled tacos asymmetrical
              kombucha salvia chambray prism occupy. Jianbing kickstarter raw denim banh mi small batch butcher
-             vape narwhal selfies knausgaard. Disrupt fashion axe banjo, selvage godard humblebrag microdosing mixtape.`
+             vape narwhal selfies knausgaard. Disrupt fashion axe banjo, selvage godard humblebrag microdosing mixtape.`,
+    groupRootId: 'group1',
+    rootFolderId: ''
   },
   {
     id: 'hij2kln',
@@ -24,7 +26,9 @@ let groups = [
              Pork belly brooklyn next level vice, tote bag blog master cleanse vape austin YOLO waistcoat lomo
              gochujang distillery. Cray sartorial pok pok bitters gochujang, pug synth tousled tacos asymmetrical
              kombucha salvia chambray prism occupy. Jianbing kickstarter raw denim banh mi small batch butcher
-             vape narwhal selfies knausgaard. Disrupt fashion axe banjo, selvage godard humblebrag microdosing mixtape.`
+             vape narwhal selfies knausgaard. Disrupt fashion axe banjo, selvage godard humblebrag microdosing mixtape.`,
+    groupRootId: 'group2',
+    rootFolderId: ''
   },
   {
     id: 'foo3bar',
@@ -33,7 +37,9 @@ let groups = [
              Pork belly brooklyn next level vice, tote bag blog master cleanse vape austin YOLO waistcoat lomo
              gochujang distillery. Cray sartorial pok pok bitters gochujang, pug synth tousled tacos asymmetrical
              kombucha salvia chambray prism occupy. Jianbing kickstarter raw denim banh mi small batch butcher
-             vape narwhal selfies knausgaard. Disrupt fashion axe banjo, selvage godard humblebrag microdosing mixtape.`
+             vape narwhal selfies knausgaard. Disrupt fashion axe banjo, selvage godard humblebrag microdosing mixtape.`,
+    groupRootId: 'group3',
+    rootFolderId: ''
   }
 ]
 
