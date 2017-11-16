@@ -33,7 +33,7 @@
         return '/menu/main/navigator/' + dataRootPath
       },
       membersViewUrl: function () {
-        return '/menu/main/members/' + this.group.groupRootId
+        return 'http://localhost:3001/' + this.group.id
       }
     },
     methods: {

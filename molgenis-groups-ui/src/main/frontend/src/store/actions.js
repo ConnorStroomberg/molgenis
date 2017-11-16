@@ -1,8 +1,8 @@
 // @flow
 import type { State, Repository } from '../flow.types'
-import { SET_REPOSITORIES, ADD_REPOSITORY } from './mutations'
+import { SET_REPOSITORIES, SET_ERROR, ADD_REPOSITORY } from './mutations'
 // $FlowFixMe
-// import api from '@molgenis/molgenis-api-client'
+import api from '@molgenis/molgenis-api-client'
 
 export const GET_REPOSITORY_BY_USER = '__GET_ENTITIES_IN_PACKAGE__'
 export const DELETE_GROUP = '__DELETE_GROUP__'
@@ -68,18 +68,16 @@ export default {
     commit(SET_REPOSITORIES, state.repositories.filter(repository => repository.id !== groupId))
   },
   [CREATE_GROUP] ({commit, state}: { commit: Function, state: State }, formData: any) {
-    // api.post('/api/v2/sys_sec_Group/).then(response => {
-    //   dispatch(GET_REPOSITORY_BY_USER)
-    // }, error => {
-    //   commit(SET_ERROR, 'Could not create group.' + error)
-    // })
-    const mockCreated = {
-      id: 'id-' + formData.label,
-      label: formData.label,
-      description: formData.description,
-      groupRootId: '',
-      rootFolderId: ''
-    }
-    commit(ADD_REPOSITORY, mockCreated)
+    api.post('/group/?label=' + formData.label).then(response => {
+      commit(ADD_REPOSITORY, {
+        id: response.id,
+        label: response.label,
+        description: '',
+        groupRootId: '',
+        rootFolderId: ''
+      })
+    }, error => {
+      commit(SET_ERROR, 'Could not create group.' + error)
+    })
   }
 }

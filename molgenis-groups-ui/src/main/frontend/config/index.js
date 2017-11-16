@@ -25,8 +25,14 @@ module.exports = {
       '/api': {
         target: 'http://localhost:8080'
       },
-      '/menu/main/dataexplorer': {
+      '/menu/main/navigator': {
         target: 'http://localhost:8080'
+      },
+      '/group': {
+        target: 'http://localhost:8080'
+      },
+      '/members': {
+        target: 'http://localhost:3001/'
       }
     },
     cssSourceMap: false

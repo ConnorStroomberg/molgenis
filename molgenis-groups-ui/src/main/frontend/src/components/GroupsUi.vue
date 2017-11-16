@@ -22,7 +22,7 @@
         </span>
       </div>
       <div v-if="isSuperUser" class="col-lg-2">
-        <a href="create" class="btn btn-success pull-right" >{{ 'create-group-button' | i18n }}</a>
+        <router-link :to="{ name: 'create-group' }" class="btn btn-success pull-right">{{ 'create-group-button' | i18n }}</router-link>
       </div>
     </div>
 
