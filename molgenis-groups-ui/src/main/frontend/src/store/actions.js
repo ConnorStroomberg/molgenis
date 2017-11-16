@@ -8,41 +8,43 @@ export const GET_REPOSITORY_BY_USER = '__GET_ENTITIES_IN_PACKAGE__'
 export const DELETE_GROUP = '__DELETE_GROUP__'
 export const CREATE_GROUP = '__CREATE_GROUP__'
 
-let groups = [
-  {
-    id: 'abc1efg',
-    label: 'BBMRI-NL staging area',
-    description: `Actually unicorn affogato trust fund shaman seitan YOLO chillwave beard snackwave kinfolk.
-             Pork belly brooklyn next level vice, tote bag blog master cleanse vape austin YOLO waistcoat lomo
-             gochujang distillery. Cray sartorial pok pok bitters gochujang, pug synth tousled tacos asymmetrical
-             kombucha salvia chambray prism occupy. Jianbing kickstarter raw denim banh mi small batch butcher
-             vape narwhal selfies knausgaard. Disrupt fashion axe banjo, selvage godard humblebrag microdosing mixtape.`,
-    groupRootId: 'group1',
-    rootFolderId: ''
-  },
-  {
-    id: 'hij2kln',
-    label: 'BBMRI-ERIC Directory',
-    description: `Actually unicorn affogato trust fund shaman seitan YOLO chillwave beard snackwave kinfolk.
-             Pork belly brooklyn next level vice, tote bag blog master cleanse vape austin YOLO waistcoat lomo
-             gochujang distillery. Cray sartorial pok pok bitters gochujang, pug synth tousled tacos asymmetrical
-             kombucha salvia chambray prism occupy. Jianbing kickstarter raw denim banh mi small batch butcher
-             vape narwhal selfies knausgaard. Disrupt fashion axe banjo, selvage godard humblebrag microdosing mixtape.`,
-    groupRootId: 'group2',
-    rootFolderId: ''
-  },
-  {
-    id: 'foo3bar',
-    label: 'BBMRI-FI Playground',
-    description: `Actually unicorn affogato trust fund shaman seitan YOLO chillwave beard snackwave kinfolk.
-             Pork belly brooklyn next level vice, tote bag blog master cleanse vape austin YOLO waistcoat lomo
-             gochujang distillery. Cray sartorial pok pok bitters gochujang, pug synth tousled tacos asymmetrical
-             kombucha salvia chambray prism occupy. Jianbing kickstarter raw denim banh mi small batch butcher
-             vape narwhal selfies knausgaard. Disrupt fashion axe banjo, selvage godard humblebrag microdosing mixtape.`,
-    groupRootId: 'group3',
-    rootFolderId: ''
-  }
-]
+// let groups = [
+//   {
+//     id: 'abc1efg',
+//     label: 'BBMRI-NL staging area',
+//     description: `Actually unicorn affogato trust fund shaman seitan YOLO chillwave beard snackwave kinfolk.
+//              Pork belly brooklyn next level vice, tote bag blog master cleanse vape austin YOLO waistcoat lomo
+//              gochujang distillery. Cray sartorial pok pok bitters gochujang, pug synth tousled tacos asymmetrical
+//              kombucha salvia chambray prism occupy. Jianbing kickstarter raw denim banh mi small batch butcher
+//              vape narwhal selfies knausgaard. Disrupt fashion axe banjo, selvage godard humblebrag microdosing mixtape.`,
+//     groupRootId: 'group1',
+//     rootFolderId: ''
+//   },
+//   {
+//     id: 'hij2kln',
+//     label: 'BBMRI-ERIC Directory',
+//     description: `Actually unicorn affogato trust fund shaman seitan YOLO chillwave beard snackwave kinfolk.
+//              Pork belly brooklyn next level vice, tote bag blog master cleanse vape austin YOLO waistcoat lomo
+//              gochujang distillery. Cray sartorial pok pok bitters gochujang, pug synth tousled tacos asymmetrical
+//              kombucha salvia chambray prism occupy. Jianbing kickstarter raw denim banh mi small batch butcher
+//              vape narwhal selfies knausgaard. Disrupt fashion axe banjo, selvage godard humblebrag microdosing mixtape.`,
+//     groupRootId: 'group2',
+//     rootFolderId: ''
+//   },
+//   {
+//     id: 'foo3bar',
+//     label: 'BBMRI-FI Playground',
+//     description: `Actually unicorn affogato trust fund shaman seitan YOLO chillwave beard snackwave kinfolk.
+//              Pork belly brooklyn next level vice, tote bag blog master cleanse vape austin YOLO waistcoat lomo
+//              gochujang distillery. Cray sartorial pok pok bitters gochujang, pug synth tousled tacos asymmetrical
+//              kombucha salvia chambray prism occupy. Jianbing kickstarter raw denim banh mi small batch butcher
+//              vape narwhal selfies knausgaard. Disrupt fashion axe banjo, selvage godard humblebrag microdosing mixtape.`,
+//     groupRootId: 'group3',
+//     rootFolderId: ''
+//   }
+// ]
+
+const rootGroup = (group) => !!group.parent === false
 
 function toRepository (response: any) : Repository {
   return response
@@ -50,13 +52,15 @@ function toRepository (response: any) : Repository {
 
 export default {
   [GET_REPOSITORY_BY_USER] ({commit}: { commit: Function }) {
-    // api.get('/api/v2/sys_sec_Group').then(response => {
-    //   commit(SET_REPOSITORIES, response.items.map(toRepository))
-    // }, error => {
-    //   commit(SET_ERROR, error)
-    // })
-
-    commit(SET_REPOSITORIES, groups.map(toRepository))
+    api.get('/api/v2/sys_sec_Group').then(response => {
+      console.log(response)
+      commit(SET_REPOSITORIES, response.items
+        .filter(rootGroup)
+        .map(toRepository)
+      )
+    }, error => {
+      commit(SET_ERROR, error)
+    })
   },
   [DELETE_GROUP] ({commit, state}: { commit: Function, state: State }, groupId: string) {
     // api.delete('/api/v2/sys_sec_Group/' + groupId).then(response => {
