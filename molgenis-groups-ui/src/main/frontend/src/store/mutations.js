@@ -2,6 +2,7 @@
 import type { State, Repository } from '../flow.types'
 export const SET_ERROR = '__SET_ERROR__'
 export const SET_REPOSITORIES = '__SET_REPOSITORIES__'
+export const ADD_REPOSITORY = '__ADD_REPOSITORY__'
 
 export default {
   [SET_ERROR] (state: State, error: any) {
@@ -9,5 +10,11 @@ export default {
   },
   [SET_REPOSITORIES] (state: State, repositories: Array<Repository>) {
     state.repositories = repositories
+  },
+  /**
+   * Temp function used to mock the creation of a new repository
+   */
+  [ADD_REPOSITORY] (state: State, newRepository: Repository) {
+    state.repositories.push(newRepository)
   }
 }

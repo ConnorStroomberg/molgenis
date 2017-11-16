@@ -22,7 +22,7 @@
         </span>
       </div>
       <div v-if="isSuperUser" class="col-lg-2">
-        <button @click="reset()" class="btn btn-success pull-right" type="button">{{ 'create-group-button' | i18n }}</button>
+        <a href="create" class="btn btn-success pull-right" >{{ 'create-group-button' | i18n }}</a>
       </div>
     </div>
 

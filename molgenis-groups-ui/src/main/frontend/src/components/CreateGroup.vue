@@ -1,0 +1,68 @@
+// @flow
+<template>
+  <div class="row pt-3">
+    <div class="col-lg-8 offset-lg-2 col-md-8 offset-md-0">
+
+      <div v-if="error != undefined" class="alert alert-danger" role="alert">
+        <button @click="error=null" type="button" class="close"><span aria-hidden="true">&times;</span></button>
+        {{error}}
+      </div>
+
+      <h1 id="mg-groups-header">Create new group</h1>
+
+      <form>
+        <div class="form-group">
+          <label for="mg-new-group-label">Group label</label>
+          <input id="mg-new-group-label" class="form-control" v-model="formData.label" type="text" placeholder="Enter label">
+        </div>
+        <div class="form-group">
+          <label for="new-group-desc">Group description</label>
+          <textarea id="new-group-desc" class="form-control" v-model="formData.description" rows="3" placeholder="Give a short description of the group"></textarea>
+        </div>
+
+        <a href="/" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" v-on:submit.prevent="onSubmit" v-on:click="createBtnClicked">Create</button>
+      </form>
+
+    </div>
+  </div>
+</template>
+
+
+<script>
+  import { SET_ERROR } from '../store/mutations'
+  import { INITIAL_STATE } from '../store/state'
+  import { CREATE_GROUP } from '../store/actions'
+
+  export default {
+    name: 'create-group',
+    data () {
+      return {
+        homeUrl: INITIAL_STATE.baseUrl,
+        formData: {
+          label: '',
+          description: ''
+        }
+      }
+    },
+    methods: {
+      createBtnClicked: function () {
+        console.log('clear button clicked, dispatch create-group-action')
+        this.$store.dispatch(CREATE_GROUP, this.formData).then(() => {
+          this.$router.push({ name: 'groups-list' })
+        })
+      }
+    },
+    computed: {
+      isSuperUser: () => true, // INITIAL_STATE.isSuperUser,
+      error: {
+        get () {
+          return this.$store.state.error
+        },
+        set (error) {
+          this.$store.commit(SET_ERROR, error)
+        }
+      }
+    }
+  }
+</script>
