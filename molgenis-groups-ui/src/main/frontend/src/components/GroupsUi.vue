@@ -12,7 +12,7 @@
 
     <!-- Search element -->
     <div id="mg-groups-search-container" class="row">
-      <div class="col-10 input-group">
+      <div class="col-10 input-group mb-1">
         <input v-model="searchQuery" type="text" class="form-control" :placeholder="$t('search-input-placeholder')">
         <span class="input-group-btn">
           <button @click="submitQuery()" class="btn btn-outline-secondary" :disabled="!searchQuery" type="button">{{ 'search-button' | i18n }}</button>
@@ -22,7 +22,7 @@
         </span>
       </div>
       <div v-if="isSuperUser" class="col-lg-2">
-        <router-link :to="{ name: 'create-group' }" class="btn btn-success pull-right">{{ 'create-group-button' | i18n }}</router-link>
+        <router-link id="create-group-btn" :to="{ name: 'create-group' }" class="btn btn-success">{{ 'create-group-button' | i18n }}</router-link>
       </div>
     </div>
 
@@ -38,6 +38,15 @@
     </div>
   </div>
 </template>
+
+<style>
+  /*Large devices (desktops, 992px and up)*/
+  @media (min-width: 992px) {
+    #create-group-btn {
+      float: right;
+    }
+  }
+</style>
 
 
 <script>
