@@ -13,6 +13,7 @@ import org.molgenis.security.core.service.UserAccountService;
 import org.molgenis.security.core.service.UserService;
 import org.molgenis.security.core.service.impl.TokenGenerator;
 import org.molgenis.security.core.service.impl.UserDetailsServiceImpl;
+import org.molgenis.security.core.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +47,9 @@ public class DataSecurityConfig
 	@Autowired
 	private TokenFactory tokenFactory;
 
+	@Autowired
+	private RoleService roleService;
+
 	@Bean
 	public PasswordEncoder passwordEncoder()
 	{
@@ -73,7 +77,7 @@ public class DataSecurityConfig
 	@Bean
 	public GroupService groupService()
 	{
-		return new GroupServiceImpl(groupMembershipService(), dataService, groupFactory, roleFactory);
+		return new GroupServiceImpl(groupMembershipService(), dataService, groupFactory, roleFactory, roleService);
 	}
 
 	@Bean

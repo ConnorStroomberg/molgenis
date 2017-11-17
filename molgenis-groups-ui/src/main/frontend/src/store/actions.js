@@ -62,14 +62,14 @@ export default {
       commit(SET_ERROR, error)
     })
   },
-  [DELETE_GROUP] ({commit, state}: { commit: Function, state: State }, groupId: string) {
-    // api.delete('/api/v2/sys_sec_Group/' + groupId).then(response => {
-    //   commit(SET_REPOSITORIES, state.repositories.filter(repository => repository.id !== groupId))
-    // }, error => {
-    //   commit(SET_ERROR, 'Could not delete group.' + error)
-    // })
+  [DELETE_GROUP] ({commit, dispatch}: { commit: Function, dispatch: Function }, groupId: string) {
+    api.delete_('/group/' + groupId).then(() => {
+      dispatch(GET_REPOSITORY_BY_USER)
+    }, error => {
+      commit(SET_ERROR, 'Could not delete group.' + error)
+    })
 
-    commit(SET_REPOSITORIES, state.repositories.filter(repository => repository.id !== groupId))
+    // commit(SET_REPOSITORIES, state.repositories.filter(repository => repository.id !== groupId))
   },
   [CREATE_GROUP] ({commit, state}: { commit: Function, state: State }, formData: any) {
     api.post('/group/?label=' + formData.label).then(response => {

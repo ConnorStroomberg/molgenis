@@ -7,17 +7,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoSession;
 import org.molgenis.data.DataService;
-import org.molgenis.data.security.model.GroupEntity;
-import org.molgenis.data.security.model.GroupFactory;
-import org.molgenis.data.security.model.RoleFactory;
+import org.molgenis.data.security.model.*;
 import org.molgenis.security.core.model.*;
 import org.molgenis.security.core.service.GroupMembershipService;
+import org.molgenis.security.core.service.RoleService;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,6 +55,8 @@ public class GroupServiceImplTest
 	private RoleFactory roleFactory;
 	@Mock
 	private DataService dataService;
+	@Mock
+	private RoleService roleService;
 
 	@InjectMocks
 	private GroupServiceImpl groupService;
@@ -191,6 +194,39 @@ public class GroupServiceImplTest
 
 		Group createdGroup = groupService.createGroup(group);
 		assertEquals(createdGroup.getLabel(), label);
+	}
+
+	@Test
+	public void testDeleteGroup()
+	{
+		String groupId = "groupsId-123";
+
+		GroupEntity rootGroup = mock(GroupEntity.class);
+		GroupEntity childGroupA = mock(GroupEntity.class);
+		GroupEntity childGroupB = mock(GroupEntity.class);
+		GroupEntity grandChildGroupA = mock(GroupEntity.class);
+		RoleEntity role1 = mock(RoleEntity.class);
+		RoleEntity role2 = mock(RoleEntity.class);
+		RoleEntity role3 = mock(RoleEntity.class);
+		when(dataService.findOneById(GroupMetadata.GROUP, groupId, GroupEntity.class)).thenReturn(rootGroup);
+		Iterable<GroupEntity> childGroups = Arrays.asList(childGroupA, childGroupB);
+		when(rootGroup.getChildren()).thenReturn(childGroups);
+		when(childGroupA.getChildren()).thenReturn(Collections.singletonList(grandChildGroupA));
+		Iterable<RoleEntity> roles = Arrays.asList(role1);
+		when(rootGroup.getRoles()).thenReturn(roles);
+		Iterable<RoleEntity> grandChildRoles = Arrays.asList(role2, role3);
+		when(grandChildGroupA.getRoles()).thenReturn(grandChildRoles);
+
+		groupService.deleteGroup(groupId);
+
+		verify(dataService).delete(RoleMetadata.ROLE, role2);
+		verify(dataService).delete(RoleMetadata.ROLE, role3);
+		verify(dataService).delete(RoleMetadata.ROLE, role1);
+
+		verify(dataService).delete(GroupMetadata.GROUP, grandChildGroupA);
+		verify(dataService).delete(GroupMetadata.GROUP, childGroupA);
+		verify(dataService).delete(GroupMetadata.GROUP, childGroupB);
+		verify(dataService).delete(GroupMetadata.GROUP, rootGroup);
 	}
 
 }

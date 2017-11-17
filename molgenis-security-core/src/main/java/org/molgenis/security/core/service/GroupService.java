@@ -56,6 +56,14 @@ public interface GroupService
 	 * @param group with roles
 	 */
 	Group createGroup(Group group);
+
+	/**
+	 * Delete a group and its subGroups
+	 *
+	 * @param groupId the id of the group to be deleted 
+	 */
+	void deleteGroup(String groupId);
+
 	/**
 	 *
 	 *
@@ -71,5 +79,4 @@ public interface GroupService
 	 * @param role
 	 */
 	void addRoleToGroup(Group group, Role role);
-
 }

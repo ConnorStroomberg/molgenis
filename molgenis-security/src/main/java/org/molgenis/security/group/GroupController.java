@@ -12,6 +12,7 @@ import org.molgenis.security.core.model.User;
 import org.molgenis.security.core.service.GroupService;
 import org.molgenis.security.core.service.RoleService;
 import org.molgenis.security.core.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,11 +61,26 @@ public class GroupController
 	@PostMapping("/")
 	public ResponseEntity<Group> createGroup(@RequestParam("label") String label)
 	{
-		List<Role> roles = roleService.createRolesForGroup(label);
-		Group group = groupService.createGroup(Group.builder().label(label).roles(roles).build());
+		Group group = groupService.createGroup(Group.builder().label(label).build());
 		String groupId = group.getId().orElseThrow(IllegalStateException::new);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(groupId).toUri();
 		return ResponseEntity.created(location).body(group);
+	}
+
+	/**
+	 * Deletes a group and its subgroups and roles
+	 *
+	 * @param groupId the id of the group to be deleted
+	 */
+	@ApiOperation("Delete a group")
+	@ApiResponses({ @ApiResponse(code = 204, message = "Group deleted"),
+			@ApiResponse(code = 400, message = "Invalid groupId supplied"),
+			@ApiResponse(code = 404, message = "Could delete group", response = IllegalStateException.class) })
+	@ResponseStatus(value = HttpStatus.NO_CONTENT)
+	@DeleteMapping(value = "/{groupId}")
+	public void deleteGroup(@PathVariable("groupId") String groupId)
+	{
+		groupService.deleteGroup(groupId);
 	}
 
 	@ApiOperation("Get group members")

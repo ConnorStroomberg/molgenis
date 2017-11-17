@@ -27,8 +27,10 @@ import java.util.Optional;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -69,15 +71,24 @@ public class GroupControllerTest
 	@Test
 	public void testCreateGroup() throws Exception
 	{
-		List<Role> roles = Lists.newArrayList(
-				Role.builder().id("abcde").label(ConceptualRoles.GROUPADMIN.name()).build());
-		when(roleService.createRolesForGroup("BBMRI-NL")).thenReturn(roles);
-		Group group = Group.builder().id("abcde").label("BBMRI-NL").roles(roles).build();
-		when(groupService.createGroup(group)).thenReturn(group);
+		Group groupCommand = Group.builder().label("BBMRI-NL").build();
+		Group createdGroup = Group.builder().id("abcde").label("BBMRI-NL").build();
+		when(groupService.createGroup(groupCommand)).thenReturn(createdGroup);
 
 		mockMvc.perform(post("/group/").param("label", "BBMRI-NL"))
 			   .andExpect(status().isCreated())
 			   .andExpect(header().string("Location", "http://localhost/group/abcde"));
+	}
+
+	@Test
+	public void testDeleteGroup() throws Exception
+	{
+		String groupId = "groupId";
+
+		mockMvc.perform(delete("/group/" + groupId))
+			   .andExpect(status().isNoContent());
+
+		verify(groupService).deleteGroup(groupId);
 	}
 
 	@Test
