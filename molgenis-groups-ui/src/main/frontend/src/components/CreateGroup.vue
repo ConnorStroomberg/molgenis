@@ -21,7 +21,7 @@
         </div>
 
         <a href="/" class="btn btn-secondary">Cancel</a>
-        <button type="submit" class="btn btn-primary" v-on:submit.prevent="onSubmit" v-on:click="createBtnClicked">Create</button>
+        <button type="submit" class="btn btn-primary" @submit.prevent="onSubmit" @click="createBtnClicked">Create</button>
       </form>
 
     </div>
