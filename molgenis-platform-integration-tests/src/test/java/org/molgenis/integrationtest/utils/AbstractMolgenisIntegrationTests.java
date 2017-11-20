@@ -7,7 +7,7 @@ import org.molgenis.integrationtest.data.postgresql.PostgreSqlTestConfig;
 import org.molgenis.integrationtest.file.FileTestConfig;
 import org.molgenis.integrationtest.utils.config.SecurityITConfig;
 import org.molgenis.integrationtest.utils.config.WebAppITConfig;
-import org.molgenis.security.core.token.TokenService;
+import org.molgenis.security.core.service.TokenService;
 import org.molgenis.util.ApplicationContextProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

@@ -1,15 +1,20 @@
 package org.molgenis.integrationtest.utils.config;
 
+
 import org.molgenis.auth.*;
+import org.molgenis.data.security.model.SecurityPackage;
+import org.molgenis.data.security.model.TokenFactory;
+import org.molgenis.data.security.model.TokenMetaData;
+import org.molgenis.data.security.model.UserFactory;
+import org.molgenis.data.security.service.impl.DataServiceTokenService;
+import org.molgenis.data.security.service.impl.UserServiceImpl;
+import org.molgenis.data.security.user.UserAccountServiceImpl;
 import org.molgenis.integrationtest.data.aggregation.AggregationTestConfig;
+import org.molgenis.security.core.service.impl.TokenGenerator;
 import org.molgenis.security.core.utils.SecurityUtils;
 import org.molgenis.security.owned.OwnedEntityType;
 import org.molgenis.security.permission.*;
 import org.molgenis.security.settings.AuthenticationSettingsImpl;
-import org.molgenis.security.token.DataServiceTokenService;
-import org.molgenis.security.token.TokenGenerator;
-import org.molgenis.security.user.UserAccountServiceImpl;
-import org.molgenis.security.user.UserServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
