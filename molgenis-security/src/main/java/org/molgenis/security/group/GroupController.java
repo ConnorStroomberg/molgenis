@@ -61,7 +61,7 @@ public class GroupController
 	@PostMapping("/")
 	public ResponseEntity<Group> createGroup(@RequestParam("label") String label)
 	{
-		Group group = groupService.createGroup(Group.builder().label(label).build());
+		Group group = groupService.createGroup(label);
 		String groupId = group.getId().orElseThrow(IllegalStateException::new);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(groupId).toUri();
 		return ResponseEntity.created(location).body(group);

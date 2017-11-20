@@ -2,10 +2,12 @@ package org.molgenis.data.security.model;
 
 import com.google.common.collect.Lists;
 import org.molgenis.data.Entity;
+import org.molgenis.data.MolgenisDataException;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.support.StaticEntity;
 import org.molgenis.security.core.model.Group;
 import org.molgenis.security.core.model.Role;
+import org.molgenis.data.meta.model.Package;
 
 import java.util.Optional;
 
@@ -81,12 +83,41 @@ public class GroupEntity extends StaticEntity
 		set(ROLES, roleEntities);
 	}
 
+	public void setGroupPackage(Package groupPackage)
+	{
+		set(GROUP_PACKAGE, groupPackage);
+	}
+
+	/**
+	 * retrun the top level package for the group, if this group is a non top level group the group package of its parent is returned
+	 *
+	 * @return Package
+	 */
+	public Package getGroupPackage()
+	{
+		Package package_ = getEntity(GROUP_PACKAGE, Package.class);
+		if (package_ != null)
+		{
+			return package_;
+		}
+
+		Optional<GroupEntity> parent = getParent();
+		if (!parent.isPresent())
+		{
+			throw new MolgenisDataException("Invalid group structure, non top level group must have a parent");
+		}
+
+		return parent.get().getGroupPackage();
+	}
+
 	public Group toGroup()
 	{
 		Group.Builder result = Group.builder()
 									.id(getId())
 									.label(getLabel())
-									.roles(stream(getRoles()).map(RoleEntity::toRole).collect(toList()));
+									.groupPackageIdentifier(getGroupPackage().getId())
+									.roles(stream(getRoles())
+											.map(RoleEntity::toRole).collect(toList()));
 		getParent().ifPresent(parent -> result.parent(parent.toGroup()));
 		return result.build();
 	}

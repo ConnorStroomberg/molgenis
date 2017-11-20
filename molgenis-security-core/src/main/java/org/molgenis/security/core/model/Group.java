@@ -23,6 +23,8 @@ public abstract class Group
 
 	public abstract ImmutableList<Role> getRoles();
 
+	public abstract String getGroupPackageIdentifier();
+
 	public boolean hasSameParentAs(Group other)
 	{
 		return getParent().filter(parent -> other.getParent().filter(parent::equals).isPresent()).isPresent();
@@ -45,6 +47,8 @@ public abstract class Group
 		public abstract Builder parent(Group parent);
 
 		public abstract Builder roles(List<Role> roles);
+
+		public abstract Builder groupPackageIdentifier(String groupPackageIdentifier);
 
 		protected abstract ImmutableList.Builder<Role> rolesBuilder();
 

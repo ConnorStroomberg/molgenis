@@ -1,12 +1,12 @@
 package org.molgenis.data.security.service.impl;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Range;
-import com.google.common.collect.Sets;
 import org.molgenis.data.DataService;
-import org.molgenis.data.Query;
+import org.molgenis.data.meta.model.Package;
+import org.molgenis.data.meta.model.PackageFactory;
+import org.molgenis.data.meta.model.PackageMetadata;
+import org.molgenis.data.populate.IdGenerator;
 import org.molgenis.data.security.model.*;
-import org.molgenis.data.support.QueryImpl;
 import org.molgenis.security.core.model.Group;
 import org.molgenis.security.core.model.GroupMembership;
 import org.molgenis.security.core.model.Role;
@@ -23,16 +23,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.time.Instant.now;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
-import static org.molgenis.data.security.model.GroupMetadata.CHILDREN;
 import static org.molgenis.data.security.model.GroupMetadata.GROUP;
-import static org.molgenis.data.security.model.GroupMetadata.PARENT;
 import static org.molgenis.security.core.model.Group.builder;
 
 @Component
@@ -43,15 +39,17 @@ public class GroupServiceImpl implements GroupService
 	private final GroupFactory groupFactory;
 	private final RoleFactory roleFactory;
 	private final RoleService roleService;
+	private final PackageFactory packageFactory;
 
 	public GroupServiceImpl(GroupMembershipService groupMembershipService, DataService dataService,
-			GroupFactory groupFactory, RoleFactory roleFactory, RoleService roleService)
+			GroupFactory groupFactory, RoleFactory roleFactory, RoleService roleService, PackageFactory packageFactory)
 	{
 		this.groupMembershipService = requireNonNull(groupMembershipService);
 		this.dataService = requireNonNull(dataService);
 		this.groupFactory = requireNonNull(groupFactory);
 		this.roleFactory = requireNonNull(roleFactory);
 		this.roleService = requireNonNull(roleService);
+		this.packageFactory = requireNonNull(packageFactory);
 	}
 
 	@Override
@@ -113,14 +111,26 @@ public class GroupServiceImpl implements GroupService
 	}
 
 	@Override
-	public Group createGroup(Group group)
+	public Group createGroup(String label)
 	{
-		GroupEntity parentEntity = groupFactory.create().updateFrom(group, groupFactory, roleFactory);
-		dataService.add(GROUP, parentEntity);
-		List<Role> roles = roleService.createRolesForGroup(parentEntity.getLabel());
-		roles.forEach(role -> addChildGroups(parentEntity,
-					 builder().label(role.getLabel()).roles(newArrayList(role)).build()));
-		return parentEntity.toGroup().toBuilder().roles(group.getRoles()).build();
+		// todo move to  / or use separate service for the
+		String basePackageId = label.replace(" ", "_")
+									.replace(".", "_")
+									.toLowerCase();
+		Package groupPackage = packageFactory.create(basePackageId, label + " root package");
+		groupPackage.setLabel(label);
+		dataService.add(PackageMetadata.PACKAGE, groupPackage);
+		GroupEntity groupRoot = groupFactory.create(label, groupPackage);
+		List<Role> roles = roleService.createRolesForGroup(groupRoot.getLabel());
+		List<RoleEntity> roleEntities = roles.stream().map(role ->
+		{
+			RoleEntity roleEntity = roleFactory.create(role.getId());
+			roleEntity.setLabel(role.getLabel());
+			return roleEntity;
+		}).collect(Collectors.toList());
+		groupRoot.setRoles(roleEntities);
+		dataService.add(GROUP, groupRoot);
+		return groupRoot.toGroup().toBuilder().build();
 	}
 
 	private Group addChildGroups(GroupEntity parent, Group childGroup)
@@ -136,7 +146,7 @@ public class GroupServiceImpl implements GroupService
 	{
 		GroupEntity rootGroup = dataService.findOneById(GroupMetadata.GROUP, groupId, GroupEntity.class);
 		deleteGroupAndSubgroups(rootGroup);
-
+		dataService.delete(PackageMetadata.PACKAGE, rootGroup.getGroupPackage());
 	}
 
 	private void deleteGroupAndSubgroups(GroupEntity group) {

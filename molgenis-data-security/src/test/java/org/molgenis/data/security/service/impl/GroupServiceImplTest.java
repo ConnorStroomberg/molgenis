@@ -7,6 +7,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoSession;
 import org.molgenis.data.DataService;
+import org.molgenis.data.meta.model.Package;
+import org.molgenis.data.meta.model.PackageFactory;
+import org.molgenis.data.meta.model.PackageMetadata;
 import org.molgenis.data.security.model.*;
 import org.molgenis.security.core.model.*;
 import org.molgenis.security.core.service.GroupMembershipService;
@@ -57,6 +60,8 @@ public class GroupServiceImplTest
 	private DataService dataService;
 	@Mock
 	private RoleService roleService;
+	@Mock
+	private PackageFactory packageFactory;
 
 	@InjectMocks
 	private GroupServiceImpl groupService;
@@ -184,16 +189,26 @@ public class GroupServiceImplTest
 	public void testCreateGroup()
 	{
 		String label = "BBMRI_NL";
-		List<Role> roles = Lists.newArrayList(
-				Role.builder().id("abab").label(label + ConceptualRoles.GROUPADMIN.name()).build());
-		Group group = Group.builder().label(label).roles(roles).build();
+		Package groupPackage = mock(Package.class);
+		when(packageFactory.create(label.toLowerCase(), label + " root package")).thenReturn(groupPackage);
+		GroupEntity groupRoot = mock(GroupEntity.class);
+		when(groupRoot.getLabel()).thenReturn(label);
+		Group group = Group.builder()
+						   .id(label.toLowerCase())
+						   .label(label)
+						   .groupPackageIdentifier(label.toLowerCase())
+						   .build();
+		when(groupRoot.toGroup()).thenReturn(group);
+		when(groupFactory.create(label, groupPackage)).thenReturn(groupRoot);
+		Role role = Role.builder().id("roleId").label("roleLabel").build();
+		List<Role> roles = Arrays.asList(role);
+		when(roleService.createRolesForGroup(label)).thenReturn(roles);
 
-		GroupEntity groupParentEntity = mock(GroupEntity.class);
-		when(groupParentEntity.toGroup()).thenReturn(group);
-		when(groupFactory.create().updateFrom(group, groupFactory, roleFactory)).thenReturn(groupParentEntity);
+		Group createdGroup = groupService.createGroup(label);
 
-		Group createdGroup = groupService.createGroup(group);
 		assertEquals(createdGroup.getLabel(), label);
+		verify(dataService).add(PackageMetadata.PACKAGE, groupPackage);
+		verify(dataService).add(GroupMetadata.GROUP, groupRoot);
 	}
 
 	@Test
@@ -216,6 +231,8 @@ public class GroupServiceImplTest
 		when(rootGroup.getRoles()).thenReturn(roles);
 		Iterable<RoleEntity> grandChildRoles = Arrays.asList(role2, role3);
 		when(grandChildGroupA.getRoles()).thenReturn(grandChildRoles);
+		Package groupPackage = mock(Package.class);
+		when(rootGroup.getGroupPackage()).thenReturn(groupPackage);
 
 		groupService.deleteGroup(groupId);
 
@@ -227,6 +244,7 @@ public class GroupServiceImplTest
 		verify(dataService).delete(GroupMetadata.GROUP, childGroupA);
 		verify(dataService).delete(GroupMetadata.GROUP, childGroupB);
 		verify(dataService).delete(GroupMetadata.GROUP, rootGroup);
+		verify(dataService).delete(PackageMetadata.PACKAGE, groupPackage);
 	}
 
 }

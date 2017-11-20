@@ -1,6 +1,7 @@
 package org.molgenis.data.security;
 
 import org.molgenis.data.DataService;
+import org.molgenis.data.meta.model.PackageFactory;
 import org.molgenis.data.security.model.*;
 import org.molgenis.data.security.service.impl.DataServiceTokenService;
 import org.molgenis.data.security.service.impl.GroupMembershipServiceImpl;
@@ -50,6 +51,9 @@ public class DataSecurityConfig
 	@Autowired
 	private RoleService roleService;
 
+	@Autowired
+	private PackageFactory packageFactory;
+
 	@Bean
 	public PasswordEncoder passwordEncoder()
 	{
@@ -77,7 +81,8 @@ public class DataSecurityConfig
 	@Bean
 	public GroupService groupService()
 	{
-		return new GroupServiceImpl(groupMembershipService(), dataService, groupFactory, roleFactory, roleService);
+		return new GroupServiceImpl(groupMembershipService(), dataService, groupFactory, roleFactory, roleService,
+				packageFactory);
 	}
 
 	@Bean

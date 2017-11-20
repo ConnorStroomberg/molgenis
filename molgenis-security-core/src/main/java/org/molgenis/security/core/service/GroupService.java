@@ -53,9 +53,9 @@ public interface GroupService
 	/**
 	 * Creates a parent group with children.
 	 *
-	 * @param group with roles
+	 * @param label with roles
 	 */
-	Group createGroup(Group group);
+	Group createGroup(String label);
 
 	/**
 	 * Delete a group and its subGroups

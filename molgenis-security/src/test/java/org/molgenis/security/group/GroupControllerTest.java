@@ -71,9 +71,9 @@ public class GroupControllerTest
 	@Test
 	public void testCreateGroup() throws Exception
 	{
-		Group groupCommand = Group.builder().label("BBMRI-NL").build();
-		Group createdGroup = Group.builder().id("abcde").label("BBMRI-NL").build();
-		when(groupService.createGroup(groupCommand)).thenReturn(createdGroup);
+		Group groupCommand = Group.builder().label("BBMRI-NL").groupPackageIdentifier("package").build();
+		Group createdGroup = Group.builder().id("abcde").label("BBMRI-NL").groupPackageIdentifier("package").build();
+		when(groupService.createGroup(groupCommand.getLabel())).thenReturn(createdGroup);
 
 		mockMvc.perform(post("/group/").param("label", "BBMRI-NL"))
 			   .andExpect(status().isCreated())
@@ -96,9 +96,24 @@ public class GroupControllerTest
 	{
 		Role reader = Role.builder().id("kkkkk").label("BBMRI-NL Reader").build();
 		Role admin = Role.builder().id("kkkkk").label("BBMRI-NL Admin").build();
-		Group parent = Group.builder().id("abcde").label("BBMRI-NL").roles(emptyList()).build();
-		Group readers = Group.builder().id("abcdf").label("BBMRI-NL Readers").roles(singletonList(reader)).build();
-		Group admins = Group.builder().id("abcdg").label("BBMRI-NL Admins").roles(singletonList(admin)).build();
+		Group parent = Group.builder()
+							.id("abcde")
+							.label("BBMRI-NL")
+							.roles(emptyList())
+							.groupPackageIdentifier("package")
+							.build();
+		Group readers = Group.builder()
+							 .id("abcdf")
+							 .label("BBMRI-NL Readers")
+							 .groupPackageIdentifier("package")
+							 .roles(singletonList(reader))
+							 .build();
+		Group admins = Group.builder()
+							.id("abcdg")
+							.label("BBMRI-NL Admins")
+							.groupPackageIdentifier("package")
+							.roles(singletonList(admin))
+							.build();
 		User user = User.builder()
 						.id("sadf")
 						.username("admin")
