@@ -1,8 +1,9 @@
 // @flow
-import type { State, Repository } from '../flow.types'
+import type { State, Repository, User } from '../flow.types'
 export const SET_ERROR = '__SET_ERROR__'
 export const SET_REPOSITORIES = '__SET_REPOSITORIES__'
 export const ADD_REPOSITORY = '__ADD_REPOSITORY__'
+export const SET_GROUP_OWNER_OPTIONS = '__SET_GROUP_OWNER_OPTIONS__'
 
 export default {
   [SET_ERROR] (state: State, error: any) {
@@ -16,5 +17,8 @@ export default {
    */
   [ADD_REPOSITORY] (state: State, newRepository: Repository) {
     state.repositories.push(newRepository)
+  },
+  [SET_GROUP_OWNER_OPTIONS] (state: State, groupOwnerOptions: Array<User>) {
+    state.groupOwnerOptions = groupOwnerOptions
   }
 }

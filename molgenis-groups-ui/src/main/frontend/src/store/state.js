@@ -5,7 +5,8 @@ export const INITIAL_STATE = window.__INITIAL_STATE__ || {}
 
 const state: State = {
   error: undefined,
-  repositories: []
+  repositories: [],
+  groupOwnerOptions: []
 }
 
 export default state

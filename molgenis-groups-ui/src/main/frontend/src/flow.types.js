@@ -7,7 +7,13 @@ export type Repository = {
   rootFolderId: string
 }
 
+export type User = {
+  id: string,
+  label: string
+}
+
 export type State = {
   error: ?string,
-  repositories: Array<Repository>
+  repositories: Array<Repository>,
+  groupOwnerOptions: Array<User>
 }
