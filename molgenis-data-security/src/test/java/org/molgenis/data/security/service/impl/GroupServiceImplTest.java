@@ -190,6 +190,7 @@ public class GroupServiceImplTest
 	{
 		String label = "BBMRI_NL";
 		Package groupPackage = mock(Package.class);
+		when(groupPackage.getId()).thenReturn("groupPackageId");
 		when(packageFactory.create(label.toLowerCase(), label + " root package")).thenReturn(groupPackage);
 		GroupEntity groupRoot = mock(GroupEntity.class);
 		when(groupRoot.getLabel()).thenReturn(label);
@@ -199,9 +200,10 @@ public class GroupServiceImplTest
 						   .groupPackageIdentifier(label.toLowerCase())
 						   .build();
 		when(groupRoot.toGroup()).thenReturn(group);
+		when(groupRoot.getGroupPackage()).thenReturn(groupPackage);
 		when(groupFactory.create(label, groupPackage)).thenReturn(groupRoot);
 		Role role = Role.builder().id("roleId").label("roleLabel").build();
-		List<Role> roles = Arrays.asList(role);
+		List<Role> roles = Collections.singletonList(role);
 		when(roleService.createRolesForGroup(label)).thenReturn(roles);
 
 		Group createdGroup = groupService.createGroup(label);

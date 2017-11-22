@@ -113,28 +113,28 @@ public class GroupServiceImpl implements GroupService
 	@Override
 	public Group createGroup(String label)
 	{
-		// todo move to  / or use separate service for the
-		String basePackageId = label.replace(" ", "_")
-									.replace(".", "_")
-									.toLowerCase();
+		// Todo move to/or use existing service for the
+		String basePackageId = label.replace(" ", "_").replace(".", "_").toLowerCase();
+
 		Package groupPackage = packageFactory.create(basePackageId, label + " root package");
 		groupPackage.setLabel(label);
 		dataService.add(PackageMetadata.PACKAGE, groupPackage);
+
 		GroupEntity groupRoot = groupFactory.create(label, groupPackage);
-		List<Role> roles = roleService.createRolesForGroup(groupRoot.getLabel());
-		List<RoleEntity> roleEntities = roles.stream().map(role ->
-		{
-			RoleEntity roleEntity = roleFactory.create(role.getId());
-			roleEntity.setLabel(role.getLabel());
-			return roleEntity;
-		}).collect(Collectors.toList());
-		groupRoot.setRoles(roleEntities);
 		dataService.add(GROUP, groupRoot);
+
+		List<Role> roles = roleService.createRolesForGroup(groupRoot.getLabel());
+		roles.forEach(role -> addChildGroups(groupRoot, role));
+
 		return groupRoot.toGroup().toBuilder().build();
 	}
 
-	private Group addChildGroups(GroupEntity parent, Group childGroup)
+	private Group addChildGroups(GroupEntity parent, Role role)
 	{
+		Group childGroup = builder().label(role.getLabel())
+									.groupPackageIdentifier(parent.getGroupPackage().getId())
+									.roles(newArrayList(role))
+									.build();
 		GroupEntity childGroupEntity = groupFactory.create().updateFrom(childGroup, groupFactory, roleFactory);
 		childGroupEntity.setParent(parent);
 		dataService.add(GROUP, childGroupEntity);
