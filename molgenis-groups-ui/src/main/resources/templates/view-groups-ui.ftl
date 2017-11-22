@@ -14,7 +14,8 @@
         baseUrl: '${baseUrl}',
         lng: '${lng}',
         fallbackLng: '${fallbackLng}',
-        isSuperUser: ${isSuperUser?c}
+        isSuperUser: ${isSuperUser?c},
+        navigatorBaseUrl: '${navigatorBaseUrl}'
     }
 </script>
 

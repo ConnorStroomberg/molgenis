@@ -29,8 +29,7 @@
         return 'role label placeholder'
       },
       dataRootUrl: function () {
-        const dataRootPath = '' // build path to root folder using group.rootFolderId or precompute it and just use it.
-        return '/menu/main/navigator/' + dataRootPath
+        return window.__INITIAL_STATE__.navigatorBaseUrl + '/' + this.group.group_package.id
       },
       membersViewUrl: function () {
         return 'http://localhost:3001/' + this.group.id

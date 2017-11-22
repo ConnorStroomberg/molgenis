@@ -2,6 +2,7 @@ package org.molgenis.groups.ui;
 
 import org.molgenis.data.i18n.LanguageService;
 import org.molgenis.data.settings.AppSettings;
+import org.molgenis.navigator.NavigatorController;
 import org.molgenis.security.core.service.UserAccountService;
 import org.molgenis.ui.controller.VuePluginController;
 import org.molgenis.ui.menu.MenuReaderService;
@@ -29,6 +30,9 @@ public class GroupsUiController extends VuePluginController
 	public String init(Model model)
 	{
 		super.init(model, ID);
+		model.addAttribute("navigatorBaseUrl", getBaseUrl(NavigatorController.ID));
+		// Todo add url for navigation link to members manager view
+		// model.addAttribute("membersBaseUrl", getBaseUrl(MembersController.ID));
 		return "view-groups-ui";
 	}
 
