@@ -13,12 +13,9 @@
     <!-- Search element -->
     <div id="mg-groups-search-container" class="row">
       <div class="col-10 input-group mb-1">
-        <input v-model="searchQuery" type="text" class="form-control" :placeholder="$t('search-input-placeholder')">
+        <input v-model="filterQuery" type="text" class="form-control" :placeholder="$t('filter-input-placeholder')">
         <span class="input-group-btn">
-          <button @click="submitQuery()" class="btn btn-outline-secondary" :disabled="!searchQuery" type="button">{{ 'search-button' | i18n }}</button>
-        </span>
-        <span class="input-group-btn">
-          <button @click="reset()" class="btn btn-outline-secondary" :disabled="!searchQuery" type="button">{{ 'clear-button' | i18n }}</button>
+          <button @click="reset()" class="btn btn-outline-secondary" :disabled="!filterQuery" type="button">{{ 'clear-filter-button' | i18n }}</button>
         </span>
       </div>
       <div v-if="isSuperUser" class="col-lg-2">
@@ -51,6 +48,7 @@
 
 <script>
   import _ from 'lodash'
+  import type {Repository} from '../flow.types'
   import { SET_ERROR } from '../store/mutations'
   import { INITIAL_STATE } from '../store/state'
   import { GET_REPOSITORY_BY_USER } from '../store/actions'
@@ -62,22 +60,30 @@
     data () {
       return {
         homeUrl: INITIAL_STATE.baseUrl,
-        searchQuery: ''
+        filterQuery: ''
       }
     },
     methods: {
-      submitQuery: _.throttle(function () {
-        console.log('submitQuery')
+      submitFilter: _.throttle(function () {
+        console.log('filer list')
       }, 200),
       reset: function () {
-        console.log('clear search box and reset to initial state')
+        this.filterQuery = ''
+        this.groupsFilter = ''
       }
     },
     computed: {
       isSuperUser: () => true, // INITIAL_STATE.isSuperUser,
       groups: {
         get () {
-          return this.$store.state.repositories
+          if (this.filterQuery === '') {
+            return this.$store.state.repositories
+          }
+          const filterValue = this.filterQuery.toLowerCase()
+
+          return this.$store.state.repositories.filter((repository: Repository) => {
+            return repository.label.toLowerCase().includes(filterValue) || repository.description.toLowerCase().includes(filterValue)
+          })
         }
       },
       error: {

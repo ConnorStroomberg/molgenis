@@ -3,8 +3,7 @@
 export type Repository = {
   id: string,
   label: string,
-  description: ?string,
-  groupRootId: string,
+  description: string,
   rootFolderId: string
 }
 

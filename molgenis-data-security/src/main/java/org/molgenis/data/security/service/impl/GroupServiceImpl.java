@@ -114,7 +114,8 @@ public class GroupServiceImpl implements GroupService
 	public Group createGroup(String label)
 	{
 		// Todo move to/or use existing service for the
-		String basePackageId = label.replace(" ", "_").replace(".", "_").toLowerCase();
+		// Only letters (a-z, A-Z), digits (0-9), underscores(_) and hashes (#) are allowed."
+		String basePackageId = label.replaceAll("[^a-zA-Z0-9_#]+", "_").toLowerCase();
 
 		Package groupPackage = packageFactory.create(basePackageId, label + " root package");
 		groupPackage.setLabel(label);

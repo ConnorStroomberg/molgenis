@@ -29,7 +29,7 @@
         return 'role label placeholder'
       },
       dataRootUrl: function () {
-        return window.__INITIAL_STATE__.navigatorBaseUrl + '/' + this.group.group_package.id
+        return window.__INITIAL_STATE__.navigatorBaseUrl + '/' + this.group.rootFolderId
       },
       membersViewUrl: function () {
         return 'http://localhost:3001/' + this.group.id
