@@ -15,14 +15,13 @@ function toRepository (response: any) : Repository {
     id: response.id,
     label: response.label,
     description: response.description ? response.description : '',
-    rootFolderId: response.group_package
+    rootFolderId: response.group_package.id
   }
 }
 
 export default {
   [GET_REPOSITORY_BY_USER] ({commit}: { commit: Function }) {
     api.get('/api/v2/sys_sec_Group').then(response => {
-      console.log(response)
       commit(SET_REPOSITORIES, response.items
         .filter(rootGroup)
         .map(toRepository)
@@ -37,8 +36,6 @@ export default {
     }, error => {
       commit(SET_ERROR, 'Could not delete group.' + error)
     })
-
-    // commit(SET_REPOSITORIES, state.repositories.filter(repository => repository.id !== groupId))
   },
   [CREATE_GROUP] ({commit, state}: { commit: Function, state: State }, formData: any) {
     api.post('/group/?label=' + formData.label).then(response => {

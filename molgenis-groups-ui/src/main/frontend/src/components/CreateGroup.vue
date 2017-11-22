@@ -20,7 +20,7 @@
           <textarea id="new-group-desc" class="form-control" v-model="formData.description" rows="3" placeholder="Give a short description of the group"></textarea>
         </div>
 
-        <a href="/" class="btn btn-secondary">Cancel</a>
+        <router-link id="cancel-create-group-btn" class="btn btn-secondary" :to="{ name: 'groups-list' }" >Cancel</router-link>
         <button type="submit" class="btn btn-primary" @submit.prevent="onSubmit" @click="createBtnClicked">Create</button>
       </form>
 
