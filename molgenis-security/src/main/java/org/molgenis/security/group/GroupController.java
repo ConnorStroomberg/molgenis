@@ -21,7 +21,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,19 +48,15 @@ public class GroupController
 		this.userService = requireNonNull(userService);
 	}
 
-	/**
-	 * Creates a new group with standard subgroups and roles
-	 *
-	 * @param label the label of the new group
-	 */
-	@ApiOperation("Create a group with roles")
+
+	@ApiOperation("Create a group with roles and owner")
 	@ApiResponses({ @ApiResponse(code = 200, message = "Group with roles will be returned", response = Group.class),
-			@ApiResponse(code = 400, message = "Invalid group-label supplied", response = IllegalStateException.class),
+			@ApiResponse(code = 400, message = "Invalid body supplied", response = IllegalStateException.class),
 			@ApiResponse(code = 404, message = "Could not add group", response = IllegalStateException.class) })
-	@PostMapping("/")
-	public ResponseEntity<Group> createGroup(@RequestParam("label") String label)
+	@PostMapping(value = "/", consumes = "application/json")
+	public ResponseEntity<Group> createGroup(@RequestBody CreateGroup createGroup)
 	{
-		Group group = groupService.createGroup(label);
+		Group group = groupService.createGroup(createGroup.getLabel(), createGroup.getGroupOwnerId());
 		String groupId = group.getId().orElseThrow(IllegalStateException::new);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(groupId).toUri();
 		return ResponseEntity.created(location).body(group);

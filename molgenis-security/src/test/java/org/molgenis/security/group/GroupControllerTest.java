@@ -1,19 +1,26 @@
 package org.molgenis.security.group;
 
+import com.google.api.client.json.Json;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import net.dongliu.gson.GsonJava8TypeAdapterFactory;
+import org.apache.http.entity.ContentType;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
+import org.molgenis.gson.AutoValueTypeAdapterFactory;
 import org.molgenis.security.core.model.*;
 import org.molgenis.security.core.service.GroupService;
 import org.molgenis.security.core.service.RoleService;
 import org.molgenis.security.core.service.UserService;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.testng.annotations.AfterMethod;
@@ -48,6 +55,8 @@ public class GroupControllerTest
 	private MockMvc mockMvc;
 	private MockitoSession mockitoSession;
 
+	private Gson gson;
+
 	@BeforeMethod
 	public void setUp() throws Exception
 	{
@@ -56,7 +65,9 @@ public class GroupControllerTest
 		GsonHttpMessageConverter gsonHttpMessageConverter = new GsonHttpMessageConverter();
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapterFactory(new GsonJava8TypeAdapterFactory());
-		gsonHttpMessageConverter.setGson(gsonBuilder.create());
+		gson = gsonBuilder.registerTypeAdapterFactory(new AutoValueTypeAdapterFactory()).create();
+
+		gsonHttpMessageConverter.setGson(gson);
 		mockMvc = MockMvcBuilders.standaloneSetup(groupController)
 								 .setMessageConverters(gsonHttpMessageConverter)
 								 .build();
@@ -71,11 +82,18 @@ public class GroupControllerTest
 	@Test
 	public void testCreateGroup() throws Exception
 	{
-		Group groupCommand = Group.builder().label("BBMRI-NL").groupPackageIdentifier("package").build();
-		Group createdGroup = Group.builder().id("abcde").label("BBMRI-NL").groupPackageIdentifier("package").build();
-		when(groupService.createGroup(groupCommand.getLabel())).thenReturn(createdGroup);
+		String label = "BBMRI-NL";
+		String ownerUserId = "ownerUserId";
+		Group createdGroup = Group.builder().id("abcde").label(label).groupPackageIdentifier("package").build();
+		when(groupService.createGroup(label, ownerUserId)).thenReturn(createdGroup);
 
-		mockMvc.perform(post("/group/").param("label", "BBMRI-NL"))
+		String jsonString = gson.toJson(CreateGroup.create(label, "desc", ownerUserId));
+
+		mockMvc.perform(
+				post("/group/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonString)
+		)
 			   .andExpect(status().isCreated())
 			   .andExpect(header().string("Location", "http://localhost/group/abcde"));
 	}

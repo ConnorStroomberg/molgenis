@@ -54,6 +54,9 @@ public class DataSecurityConfig
 	@Autowired
 	private PackageFactory packageFactory;
 
+	@Autowired
+	private UserService userService;
+
 	@Bean
 	public PasswordEncoder passwordEncoder()
 	{
@@ -82,7 +85,7 @@ public class DataSecurityConfig
 	public GroupService groupService()
 	{
 		return new GroupServiceImpl(groupMembershipService(), dataService, groupFactory, roleFactory, roleService,
-				packageFactory);
+				packageFactory, userService());
 	}
 
 	@Bean

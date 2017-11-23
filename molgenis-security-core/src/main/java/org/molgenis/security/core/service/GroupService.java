@@ -53,9 +53,10 @@ public interface GroupService
 	/**
 	 * Creates a parent group with children.
 	 *
-	 * @param label with roles
+	 * @param label the human readable group name
+	 * @param ownerUserId the identifier referring to the use to be made group owner
 	 */
-	Group createGroup(String label);
+	Group createGroup(String label, String ownerUserId);
 
 	/**
 	 * Delete a group and its subGroups

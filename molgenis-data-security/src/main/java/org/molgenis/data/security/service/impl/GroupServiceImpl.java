@@ -2,27 +2,23 @@ package org.molgenis.data.security.service.impl;
 
 import com.google.common.collect.Range;
 import org.molgenis.data.DataService;
+import org.molgenis.data.MolgenisDataException;
 import org.molgenis.data.meta.model.Package;
 import org.molgenis.data.meta.model.PackageFactory;
 import org.molgenis.data.meta.model.PackageMetadata;
-import org.molgenis.data.populate.IdGenerator;
 import org.molgenis.data.security.model.*;
-import org.molgenis.security.core.model.Group;
-import org.molgenis.security.core.model.GroupMembership;
-import org.molgenis.security.core.model.Role;
-import org.molgenis.security.core.model.User;
+import org.molgenis.security.core.model.*;
 import org.molgenis.security.core.service.GroupMembershipService;
 import org.molgenis.security.core.service.GroupService;
 import org.molgenis.security.core.service.RoleService;
+import org.molgenis.security.core.service.UserService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.time.Instant.now;
@@ -40,9 +36,11 @@ public class GroupServiceImpl implements GroupService
 	private final RoleFactory roleFactory;
 	private final RoleService roleService;
 	private final PackageFactory packageFactory;
+	private final UserService userService;
 
 	public GroupServiceImpl(GroupMembershipService groupMembershipService, DataService dataService,
-			GroupFactory groupFactory, RoleFactory roleFactory, RoleService roleService, PackageFactory packageFactory)
+			GroupFactory groupFactory, RoleFactory roleFactory, RoleService roleService, PackageFactory packageFactory,
+			UserService userService)
 	{
 		this.groupMembershipService = requireNonNull(groupMembershipService);
 		this.dataService = requireNonNull(dataService);
@@ -50,6 +48,7 @@ public class GroupServiceImpl implements GroupService
 		this.roleFactory = requireNonNull(roleFactory);
 		this.roleService = requireNonNull(roleService);
 		this.packageFactory = requireNonNull(packageFactory);
+		this.userService = requireNonNull(userService);
 	}
 
 	@Override
@@ -111,9 +110,9 @@ public class GroupServiceImpl implements GroupService
 	}
 
 	@Override
-	public Group createGroup(String label)
+	public Group createGroup(String label, String ownerUserId)
 	{
-		// Todo move to/or use existing service for the
+		// Todo move to/or use existing service for the naming
 		// Only letters (a-z, A-Z), digits (0-9), underscores(_) and hashes (#) are allowed."
 		String basePackageId = label.replaceAll("[^a-zA-Z0-9_#]+", "_").toLowerCase();
 
@@ -125,7 +124,31 @@ public class GroupServiceImpl implements GroupService
 		dataService.add(GROUP, groupRoot);
 
 		List<Role> roles = roleService.createRolesForGroup(groupRoot.getLabel());
-		roles.forEach(role -> addChildGroups(groupRoot, role));
+		//Todo how do we know the 'admin' group ?, for now just use the label but this needs to change
+		Optional<Group> adminGroup = StreamSupport.stream(roles.spliterator(), false)
+												  .map(role -> addChildGroups(groupRoot, role))
+												  .filter(g -> g.getLabel()
+																.endsWith(ConceptualRoles.GROUPADMIN.getDescription()))
+												  .findFirst();
+		if (!adminGroup.isPresent())
+		{
+			throw new MolgenisDataException("Could not create new group, no admin group found");
+		}
+
+		// Todo should this be part of group creating ?
+		Optional<User> adminUser = userService.findUserById(ownerUserId);
+
+		if (!adminUser.isPresent())
+		{
+			throw new MolgenisDataException("Could not create new group, no user found for given ownerUserId");
+		}
+
+		GroupMembership groupMembership = GroupMembership.builder()
+														 .group(adminGroup.get())
+														 .user(adminUser.get())
+														 .start(now())
+														 .build();
+		groupMembershipService.add(Collections.singletonList(groupMembership));
 
 		return groupRoot.toGroup().toBuilder().build();
 	}
@@ -159,8 +182,6 @@ public class GroupServiceImpl implements GroupService
 
 	private void deleteRole(RoleEntity role) {
 		// Todo Find groups revering to this role and remove the role from is roles list
-//		Query<GroupEntity> query = new QueryImpl<GroupEntity>().eq(CHILDREN, role.getId());
-//		dataService.findAll(GroupMetadata.GROUP, query, GroupEntity.class);
 		dataService.delete(RoleMetadata.ROLE, role);
 	}
 

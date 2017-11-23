@@ -45,8 +45,13 @@ export default {
       commit(SET_ERROR, 'Could not delete group.' + error)
     })
   },
-  [CREATE_GROUP] ({commit, state}: { commit: Function, state: State }, formData: any) {
-    api.post('/group/?label=' + formData.label).then(response => {
+  [CREATE_GROUP] ({commit}: { commit: Function }, formData: any) {
+    const data = {
+      label: formData.label,
+      description: formData.description,
+      groupOwnerId: formData.groupAdministrator
+    }
+    api.post('/group/', {body: JSON.stringify(data)}).then(response => {
       commit(ADD_REPOSITORY, {
         id: response.id,
         label: response.label,

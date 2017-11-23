@@ -2,6 +2,7 @@ package org.molgenis.data.security.service.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -14,6 +15,7 @@ import org.molgenis.data.security.model.*;
 import org.molgenis.security.core.model.*;
 import org.molgenis.security.core.service.GroupMembershipService;
 import org.molgenis.security.core.service.RoleService;
+import org.molgenis.security.core.service.UserService;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -25,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static java.time.Instant.now;
 import static java.time.Month.JANUARY;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.singleton;
@@ -62,6 +65,8 @@ public class GroupServiceImplTest
 	private RoleService roleService;
 	@Mock
 	private PackageFactory packageFactory;
+	@Mock
+	private UserService userService;
 
 	@InjectMocks
 	private GroupServiceImpl groupService;
@@ -188,10 +193,16 @@ public class GroupServiceImplTest
 	@Test
 	public void testCreateGroup()
 	{
+		// params
 		String label = "BBMRI_NL";
+		String ownerUserId = "OwnerUserId";
+
+		// package creation mocks
 		Package groupPackage = mock(Package.class);
 		when(groupPackage.getId()).thenReturn("groupPackageId");
 		when(packageFactory.create(label.toLowerCase(), label + " root package")).thenReturn(groupPackage);
+
+		// root group mocks
 		GroupEntity groupRoot = mock(GroupEntity.class);
 		when(groupRoot.getLabel()).thenReturn(label);
 		Group group = Group.builder()
@@ -201,16 +212,32 @@ public class GroupServiceImplTest
 						   .build();
 		when(groupRoot.toGroup()).thenReturn(group);
 		when(groupRoot.getGroupPackage()).thenReturn(groupPackage);
-		when(groupFactory.create(label, groupPackage)).thenReturn(groupRoot);
+
+		// child group mocks and roles
+		GroupEntity nonAdminChild = mock(GroupEntity.class);
+		GroupEntity adminChild = mock(GroupEntity.class);
+		doReturn(groupRoot).when(groupFactory).create(label, groupPackage);
+		doReturn(adminChild, nonAdminChild).when(groupFactory).create();
+		when(adminChild.updateFrom(any(), any(), any())).thenReturn(adminChild);
+		Group adminChildGroup = mock(Group.class);
+		when(adminChildGroup.getLabel()).thenReturn("mock - " + ConceptualRoles.GROUPADMIN.getDescription());
+		when(adminChild.toGroup()).thenReturn(adminChildGroup);
+
 		Role role = Role.builder().id("roleId").label("roleLabel").build();
 		List<Role> roles = Collections.singletonList(role);
 		when(roleService.createRolesForGroup(label)).thenReturn(roles);
+		User user = User.builder().username("userName").password("password").email("email").build();
+		when(userService.findUserById(ownerUserId)).thenReturn(Optional.of(user));
 
-		Group createdGroup = groupService.createGroup(label);
+		// Test method
+		Group createdGroup = groupService.createGroup(label, ownerUserId);
 
+		// Check assumptions
 		assertEquals(createdGroup.getLabel(), label);
+
 		verify(dataService).add(PackageMetadata.PACKAGE, groupPackage);
 		verify(dataService).add(GroupMetadata.GROUP, groupRoot);
+		verify(groupMembershipService).add(anyList());
 	}
 
 	@Test
