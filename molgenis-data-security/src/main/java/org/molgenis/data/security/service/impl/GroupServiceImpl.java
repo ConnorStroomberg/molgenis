@@ -175,6 +175,8 @@ public class GroupServiceImpl implements GroupService
 
 	private void deleteGroupAndSubgroups(GroupEntity group) {
 		group.getChildren().forEach(this::deleteGroupAndSubgroups);
+		List<GroupMembership> groupMemberships = groupMembershipService.getGroupMemberships(group.toGroup());
+		groupMembershipService.delete(groupMemberships);
 		Iterable<RoleEntity> groupRoles = group.getRoles();
 		dataService.delete(GroupMetadata.GROUP, group);
 		groupRoles.forEach(this::deleteRole);

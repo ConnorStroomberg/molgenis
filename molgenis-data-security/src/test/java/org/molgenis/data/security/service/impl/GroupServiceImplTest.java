@@ -30,6 +30,7 @@ import java.util.Optional;
 import static java.time.Instant.now;
 import static java.time.Month.JANUARY;
 import static java.time.ZoneOffset.UTC;
+import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.singleton;
 import static org.mockito.Mockito.*;
 import static org.mockito.quality.Strictness.STRICT_STUBS;
@@ -263,6 +264,18 @@ public class GroupServiceImplTest
 		Package groupPackage = mock(Package.class);
 		when(rootGroup.getGroupPackage()).thenReturn(groupPackage);
 
+		Group groupWithMembers = mock(Group.class);
+		Group groupWithOutMembers = mock(Group.class);
+		when(childGroupA.toGroup()).thenReturn(groupWithOutMembers);
+		when(grandChildGroupA.toGroup()).thenReturn(groupWithOutMembers);
+		when(rootGroup.toGroup()).thenReturn(groupWithOutMembers);
+		when(childGroupB.toGroup()).thenReturn(groupWithMembers);
+		GroupMembership groupMembership = mock(GroupMembership.class);
+		List<GroupMembership> memberships = Collections.singletonList(groupMembership);
+
+		doReturn(EMPTY_LIST).when(groupMembershipService).getGroupMemberships(groupWithOutMembers);
+		doReturn(memberships).when(groupMembershipService).getGroupMemberships(groupWithMembers);
+
 		groupService.deleteGroup(groupId);
 
 		verify(dataService).delete(RoleMetadata.ROLE, role2);
@@ -274,6 +287,8 @@ public class GroupServiceImplTest
 		verify(dataService).delete(GroupMetadata.GROUP, childGroupB);
 		verify(dataService).delete(GroupMetadata.GROUP, rootGroup);
 		verify(dataService).delete(PackageMetadata.PACKAGE, groupPackage);
+
+		verify(groupMembershipService).delete(memberships);
 	}
 
 }
