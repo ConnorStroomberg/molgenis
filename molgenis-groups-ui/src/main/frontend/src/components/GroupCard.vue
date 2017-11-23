@@ -29,7 +29,9 @@
         return 'role label placeholder'
       },
       dataRootUrl: function () {
-        return window.__INITIAL_STATE__.navigatorBaseUrl + '/' + this.group.rootFolderId
+        // return window.__INITIAL_STATE__.navigatorBaseUrl || + '/' + this.group.rootFolderId
+        // todo replace with INITIAL_STATE__.navigatorBaseUrl
+        return 'http://localhost:8080/menu/main/navigator/' + this.group.rootFolderId
       },
       membersViewUrl: function () {
         return 'http://localhost:3001/' + this.group.id
