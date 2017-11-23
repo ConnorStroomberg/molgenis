@@ -9,8 +9,6 @@ export const DELETE_GROUP = '__DELETE_GROUP__'
 export const CREATE_GROUP = '__CREATE_GROUP__'
 export const GET_GROUP_OWNER_OPTIONS = '__GET_GROUP_OWNER_OPTIONS__'
 
-const rootGroup = (group) => !!group.parent === false
-
 function toRepository (response: any) : Repository {
   return {
     id: response.id,
@@ -29,9 +27,8 @@ function toUser (response: any) : User {
 
 export default {
   [GET_REPOSITORY_BY_USER] ({commit}: { commit: Function }) {
-    api.get('/api/v2/sys_sec_Group').then(response => {
+    api.get('/api/v2/sys_sec_Group?sort=label&num=1000&&q=parent==""').then(response => {
       commit(SET_REPOSITORIES, response.items
-        .filter(rootGroup)
         .map(toRepository)
       )
     }, error => {
