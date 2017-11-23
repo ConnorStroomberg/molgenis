@@ -125,8 +125,10 @@ public class GroupServiceImpl implements GroupService
 
 		List<Role> roles = roleService.createRolesForGroup(groupRoot.getLabel());
 		//Todo how do we know the 'admin' group ?, for now just use the label but this needs to change
-		Optional<Group> adminGroup = StreamSupport.stream(roles.spliterator(), false)
-												  .map(role -> addChildGroups(groupRoot, role))
+		List<Group> groups = StreamSupport.stream(roles.spliterator(), false)
+										   .map(role -> addChildGroups(groupRoot, role))
+										   .collect(Collectors.toList());
+		Optional<Group> adminGroup = groups.stream()
 												  .filter(g -> g.getLabel()
 																.endsWith(ConceptualRoles.GROUPADMIN.getDescription()))
 												  .findFirst();
