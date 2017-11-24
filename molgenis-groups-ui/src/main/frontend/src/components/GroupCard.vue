@@ -1,7 +1,7 @@
 // @flow
 <template>
     <div :id="'mg-repository-card-' + group.id" class="card">
-      <div class="card-body">
+      <div class="card-block">
         <h4 class="card-title">{{ group.label }}</h4>
         <h6 class="card-subtitle mb-2 text-muted">{{ roleLabel }}</h6>
         <p class="card-text">{{ group.description }}</p>
