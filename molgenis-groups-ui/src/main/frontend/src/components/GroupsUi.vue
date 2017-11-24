@@ -69,11 +69,10 @@
       }, 200),
       reset: function () {
         this.filterQuery = ''
-        this.groupsFilter = ''
       }
     },
     computed: {
-      isSuperUser: () => true, // INITIAL_STATE.isSuperUser,
+      isSuperUser: () => INITIAL_STATE.isSuperUser,
       groups: {
         get () {
           if (this.filterQuery === '') {

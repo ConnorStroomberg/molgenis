@@ -1,6 +1,6 @@
 // @flow
 import type {State, Repository, User} from '../flow.types'
-import { SET_REPOSITORIES, SET_ERROR, ADD_REPOSITORY, SET_GROUP_OWNER_OPTIONS } from './mutations'
+import { SET_REPOSITORIES, SET_ERROR, SET_GROUP_OWNER_OPTIONS } from './mutations'
 // $FlowFixMe
 import api from '@molgenis/molgenis-api-client'
 
@@ -51,19 +51,14 @@ export default {
       commit(SET_ERROR, 'Could not delete group.' + error)
     })
   },
-  [CREATE_GROUP] ({commit}: { commit: Function }, formData: any) {
+  [CREATE_GROUP] ({commit, dispatch}: { commit: Function, dispatch: Function }, formData: any) {
     const data = {
       label: formData.label,
       description: formData.description,
       groupOwnerId: formData.groupAdministrator
     }
     api.post('/group/', {body: JSON.stringify(data)}).then(response => {
-      commit(ADD_REPOSITORY, {
-        id: response.id,
-        label: response.label,
-        description: '',
-        rootFolderId: ''
-      })
+      dispatch(GET_REPOSITORY_BY_USER)
     }, error => {
       commit(SET_ERROR, 'Could not create group.' + error)
     })

@@ -120,6 +120,7 @@ public class GroupServiceImpl implements GroupService
 	}
 
 	@Override
+	@Transactional
 	public Group createGroup(String label, String ownerUserId)
 	{
 		// Todo move to/or use existing service for the naming
