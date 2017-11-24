@@ -11,6 +11,7 @@ import org.molgenis.security.core.model.Role;
 import org.molgenis.security.core.model.User;
 import org.molgenis.security.core.service.GroupService;
 import org.molgenis.security.core.service.RoleService;
+import org.molgenis.security.core.service.UserAccountService;
 import org.molgenis.security.core.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,8 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.time.Instant.now;
 import static java.time.ZoneId.systemDefault;
@@ -37,17 +40,42 @@ public class GroupController
 	private final GroupService groupService;
 	private final RoleService roleService;
 	private final UserService userService;
+	private final UserAccountService userAccountService;
 
 	private static final String GROUP_NOT_FOUND_MESSAGE = "Group not found";
 	private static final String ROLE_NOT_FOUND_MESSAGE = "Role not found";
 
-	public GroupController(GroupService groupService, RoleService roleService, UserService userService)
+	public GroupController(GroupService groupService, RoleService roleService, UserService userService, UserAccountService userAccountService)
 	{
 		this.groupService = requireNonNull(groupService);
 		this.roleService = requireNonNull(roleService);
 		this.userService = requireNonNull(userService);
+		this.userAccountService = requireNonNull(userAccountService);
 	}
 
+	@GetMapping(value = "/", produces = "application/json")
+	public ResponseEntity<Set<Group>> getGroups()
+	{
+		User user = userAccountService.getCurrentUser();
+		Set<Group> groups;
+		if (user.isSuperuser())
+		{
+			groups = groupService.getAllGroups();
+		}
+		else
+		{
+			groups = groupService.getCurrentGroups(user);
+
+		}
+
+		Set<Group> topLevelGroups = groups.stream()
+								   .map(Group::getParent)
+								   .filter(Optional::isPresent)
+								   .map(Optional::get)
+								   .collect(Collectors.toSet());
+
+		return ResponseEntity.ok().body(topLevelGroups);
+	}
 
 	@ApiOperation("Create a group with roles and owner")
 	@ApiResponses({ @ApiResponse(code = 200, message = "Group with roles will be returned", response = Group.class),

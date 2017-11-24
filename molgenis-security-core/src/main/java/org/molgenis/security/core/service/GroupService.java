@@ -4,6 +4,7 @@ import org.molgenis.security.core.model.Group;
 import org.molgenis.security.core.model.GroupMembership;
 import org.molgenis.security.core.model.Role;
 import org.molgenis.security.core.model.User;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,9 @@ public interface GroupService
 	 * @return Set of current {@link Group}s.
 	 */
 	Set<Group> getCurrentGroups(User user);
+
+	
+	Set<Group> getAllGroups();
 
 	/**
 	 * Creates a parent group with children.

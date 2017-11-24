@@ -12,6 +12,7 @@ import org.molgenis.security.core.service.GroupMembershipService;
 import org.molgenis.security.core.service.GroupService;
 import org.molgenis.security.core.service.RoleService;
 import org.molgenis.security.core.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,6 +108,15 @@ public class GroupServiceImpl implements GroupService
 										.filter(GroupMembership::isCurrent)
 										.map(GroupMembership::getGroup)
 										.collect(Collectors.toSet());
+	}
+
+	@Override
+	@PreAuthorize("hasRole('ROLE_SU')")
+	public Set<Group> getAllGroups()
+	{
+		return dataService.findAll(GroupMetadata.GROUP, GroupEntity.class)
+				   .map(GroupEntity::toGroup)
+				   .collect(Collectors.toSet());
 	}
 
 	@Override

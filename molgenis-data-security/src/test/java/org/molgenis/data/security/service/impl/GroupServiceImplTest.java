@@ -22,10 +22,8 @@ import org.testng.annotations.Test;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static java.time.Instant.now;
 import static java.time.Month.JANUARY;
@@ -35,6 +33,7 @@ import static java.util.Collections.singleton;
 import static org.mockito.Mockito.*;
 import static org.mockito.quality.Strictness.STRICT_STUBS;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 public class GroupServiceImplTest
 {
@@ -289,6 +288,19 @@ public class GroupServiceImplTest
 		verify(dataService).delete(PackageMetadata.PACKAGE, groupPackage);
 
 		verify(groupMembershipService).delete(memberships);
+	}
+
+	@Test
+	public void testGetAllGroups()
+	{
+		GroupEntity groupEntity = mock(GroupEntity.class);
+		Stream<GroupEntity> groups = Stream.<GroupEntity>builder().add(groupEntity).build();
+		when(dataService.findAll(GroupMetadata.GROUP, GroupEntity.class)).thenReturn(groups);
+
+		Set<Group> allGroups = groupService.getAllGroups();
+
+		assertEquals(allGroups.size(), 1);
+		verify(dataService).findAll(GroupMetadata.GROUP, GroupEntity.class);
 	}
 
 }

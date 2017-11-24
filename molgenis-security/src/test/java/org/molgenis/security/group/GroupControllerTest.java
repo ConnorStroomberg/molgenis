@@ -17,6 +17,7 @@ import org.molgenis.gson.AutoValueTypeAdapterFactory;
 import org.molgenis.security.core.model.*;
 import org.molgenis.security.core.service.GroupService;
 import org.molgenis.security.core.service.RoleService;
+import org.molgenis.security.core.service.UserAccountService;
 import org.molgenis.security.core.service.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
@@ -34,6 +35,7 @@ import java.util.Optional;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
@@ -50,6 +52,8 @@ public class GroupControllerTest
 	private RoleService roleService;
 	@Mock
 	private UserService userService;
+	@Mock
+	private UserAccountService userAccountService;
 	@InjectMocks
 	private GroupController groupController;
 	private MockMvc mockMvc;
@@ -168,6 +172,30 @@ public class GroupControllerTest
 			   .andExpect(status().isOk())
 			   .andExpect(content().contentType(APPLICATION_JSON_UTF8))
 			   .andExpect(content().json(jsonContent));
+	}
+
+	@Test
+	public void testGetGroupsAsSuperUser() throws Exception
+	{
+		User user = mock(User.class);
+		when(user.isSuperuser()).thenReturn(true);
+		when(userAccountService.getCurrentUser()).thenReturn(user);
+
+		mockMvc.perform(get("/group/")).andExpect(status().isOk());
+
+		verify(groupService).getAllGroups();
+	}
+
+	@Test
+	public void testGetGroupsAsNonSuperUser() throws Exception
+	{
+		User user = mock(User.class);
+		when(user.isSuperuser()).thenReturn(false);
+		when(userAccountService.getCurrentUser()).thenReturn(user);
+
+		mockMvc.perform(get("/group/")).andExpect(status().isOk());
+
+		verify(groupService).getCurrentGroups(user);
 	}
 
 }

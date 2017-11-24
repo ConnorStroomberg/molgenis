@@ -14,7 +14,7 @@ function toRepository (response: any) : Repository {
     id: response.id,
     label: response.label,
     description: response.description ? response.description : '',
-    rootFolderId: response.group_package.id
+    rootFolderId: response.groupPackageIdentifier
   }
 }
 
@@ -26,9 +26,18 @@ function toUser (response: any) : User {
 }
 
 export default {
+  // [GET_REPOSITORY_BY_USER] ({commit}: { commit: Function }) {
+  //   api.get('/api/v2/sys_sec_Group?sort=label&num=1000&&q=parent==""').then(response => {
+  //     commit(SET_REPOSITORIES, response.items
+  //       .map(toRepository)
+  //     )
+  //   }, error => {
+  //     commit(SET_ERROR, error)
+  //   })
+  // },
   [GET_REPOSITORY_BY_USER] ({commit}: { commit: Function }) {
-    api.get('/api/v2/sys_sec_Group?sort=label&num=1000&&q=parent==""').then(response => {
-      commit(SET_REPOSITORIES, response.items
+    api.get('/group/').then(groups => {
+      commit(SET_REPOSITORIES, groups
         .map(toRepository)
       )
     }, error => {
