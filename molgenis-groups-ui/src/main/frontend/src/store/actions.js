@@ -1,6 +1,6 @@
 // @flow
 import type {State, Repository, User} from '../flow.types'
-import { SET_REPOSITORIES, SET_ERROR, SET_GROUP_OWNER_OPTIONS } from './mutations'
+import { SET_REPOSITORIES, SET_ERROR, SET_GROUP_OWNER_OPTIONS, SET_SUCCESS_NOTICE } from './mutations'
 // $FlowFixMe
 import api from '@molgenis/molgenis-api-client'
 
@@ -25,6 +25,13 @@ function toUser (response: any) : User {
   }
 }
 
+function setSuccessMessage (commit: Function, message: string) {
+  commit(SET_SUCCESS_NOTICE, message)
+  setTimeout(function () {
+    commit(SET_SUCCESS_NOTICE, undefined)
+  }, 3000)
+}
+
 export default {
   // [GET_REPOSITORY_BY_USER] ({commit}: { commit: Function }) {
   //   api.get('/api/v2/sys_sec_Group?sort=label&num=1000&&q=parent==""').then(response => {
@@ -47,6 +54,7 @@ export default {
   [DELETE_GROUP] ({commit, dispatch}: { commit: Function, dispatch: Function }, groupId: string) {
     api.delete_('/group/' + groupId).then(() => {
       dispatch(GET_REPOSITORY_BY_USER)
+      setSuccessMessage(commit, 'Group deleted')
     }, error => {
       commit(SET_ERROR, 'Could not delete group.' + error)
     })
@@ -59,6 +67,7 @@ export default {
     }
     api.post('/group/', {body: JSON.stringify(data)}).then(response => {
       dispatch(GET_REPOSITORY_BY_USER)
+      setSuccessMessage(commit, 'Created group: ' + formData.label)
     }, error => {
       commit(SET_ERROR, 'Could not create group.' + error)
     })

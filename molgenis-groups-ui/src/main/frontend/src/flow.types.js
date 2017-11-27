@@ -14,6 +14,7 @@ export type User = {
 
 export type State = {
   error: ?string,
+  successNotice: ?string,
   repositories: Array<Repository>,
   groupOwnerOptions: Array<User>
 }

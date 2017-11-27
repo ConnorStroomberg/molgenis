@@ -8,6 +8,11 @@
       {{error}}
     </div>
 
+    <div v-if="successNotice != undefined" class="alert alert-success" role="alert">
+      <button @click="successNotice=null" type="button" class="close"><span aria-hidden="true">&times;</span></button>
+      {{successNotice}}
+    </div>
+
     <h1 id="mg-groups-header">My groups</h1>
 
     <!-- Search element -->
@@ -49,7 +54,7 @@
 <script>
   import _ from 'lodash'
   import type {Repository} from '../flow.types'
-  import { SET_ERROR } from '../store/mutations'
+  import { SET_ERROR, SET_SUCCESS_NOTICE } from '../store/mutations'
   import { INITIAL_STATE } from '../store/state'
   import { GET_REPOSITORY_BY_USER } from '../store/actions'
 
@@ -91,6 +96,14 @@
         },
         set (error) {
           this.$store.commit(SET_ERROR, error)
+        }
+      },
+      successNotice: {
+        get () {
+          return this.$store.state.successNotice
+        },
+        set (successNotice) {
+          this.$store.commit(SET_SUCCESS_NOTICE, successNotice)
         }
       }
     },
