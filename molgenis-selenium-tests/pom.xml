@@ -11,6 +11,36 @@
 
     <artifactId>molgenis-selenium-tests</artifactId>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <!--Dependency Versions-->
+        <selenium.version>3.7.1</selenium.version>
+        <assertj-core.version>3.8.0</assertj-core.version>
+        <phantomjsdriver.version>1.4.3</phantomjsdriver.version>
+        <testng.version>6.11</testng.version>
+        <query.version>1.0.0</query.version>
+        <!--Plugin Versions-->
+        <driver-binary-downloader-maven-plugin.version>1.0.16</driver-binary-downloader-maven-plugin.version>
+        <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+        <maven-failsafe-plugin.version>2.20.1</maven-failsafe-plugin.version>
+        <!--Configuration Properties-->
+        <overwrite.binaries>false</overwrite.binaries>
+        <read.timeout>30000</read.timeout>
+        <connection.timeout>40000</connection.timeout>
+        <retry.attempts>4</retry.attempts>
+        <browser>firefox</browser>
+        <threads>1</threads>
+        <remote>false</remote>
+        <seleniumGridURL/>
+        <platform/>
+        <browserVersion/>
+        <proxyEnabled>false</proxyEnabled>
+        <proxyHost/>
+        <proxyPort/>
+    </properties>
+
     <dependencies>
         <!-- Override version from parent pom -->
         <dependency>
@@ -24,14 +54,40 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.codeborne</groupId>
+            <artifactId>phantomjsdriver</artifactId>
+            <version>1.4.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>3.7.1</version>
+            <artifactId>selenium-remote-driver</artifactId>
+            <version>${selenium.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.detro.ghostdriver</groupId>
+                    <artifactId>phantomjsdriver</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.detro.ghostdriver</groupId>
+                    <artifactId>phantomjsdriver</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -48,16 +104,127 @@
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-chrome-driver</artifactId>
-            <version>3.7.1</version>
+            <artifactId>selenium-api</artifactId>
+            <version>${selenium.version}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.lazerycode.selenium</groupId>
+            <artifactId>query</artifactId>
+            <version>${query.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.lazerycode.selenium</groupId>
+                        <artifactId>driver-binary-downloader-maven-plugin</artifactId>
+                        <version>1.0.16</version>
+                        <configuration>
+                            <rootStandaloneServerDirectory>${project.basedir}/src/test/resources/selenium_standalone_binaries</rootStandaloneServerDirectory>
+                            <downloadedZipFileDirectory>${project.basedir}/src/test/resources/selenium_standalone_zips</downloadedZipFileDirectory>
+                            <customRepositoryMap>${project.basedir}/src/test/resources/RepositoryMap.xml</customRepositoryMap>
+                            <overwriteFilesThatExist>false</overwriteFilesThatExist>
+                            <onlyGetDriversForHostOperatingSystem>false</onlyGetDriversForHostOperatingSystem>
+                            <fileDownloadRetryAttempts>4</fileDownloadRetryAttempts>
+                            <fileDownloadReadTimeout>40000</fileDownloadReadTimeout>
+                            <operatingSystems>
+                                <windows>true</windows>
+                                <linux>true</linux>
+                                <mac>true</mac>
+                            </operatingSystems>
+                            <systemPropertyVariables>
+                                <browser>${browser}</browser>
+                                <screenshotDirectory>${project.build.directory}/screenshots</screenshotDirectory>
+                                <remoteDriver>${remote}</remoteDriver>
+                                <gridURL>${seleniumGridURL}</gridURL>
+                                <desiredPlatform>${platform}</desiredPlatform>
+                                <desiredBrowserVersion>${browserVersion}</desiredBrowserVersion>
+                                <proxyEnabled>${proxyEnabled}</proxyEnabled>
+                                <proxyHost>${proxyHost}</proxyHost>
+                                <proxyPort>${proxyPort}</proxyPort>
+
+                                <!--Set properties passed in by the driver binary downloader-->
+                                <phantomjs.binary.path>${phantomjs.binary.path}</phantomjs.binary.path>
+                                <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
+                                <webdriver.ie.driver>${webdriver.ie.driver}</webdriver.ie.driver>
+                                <webdriver.opera.driver>${webdriver.opera.driver}</webdriver.opera.driver>
+                                <webdriver.gecko.driver>${webdriver.gecko.driver}</webdriver.gecko.driver>
+                                <webdriver.edge.driver>${webdriver.edge.driver}</webdriver.edge.driver>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>selenium</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>${maven-failsafe-plugin.version}</version>
+                        <configuration>
+                            <parallel>methods</parallel>
+                            <threadCount>${threads}</threadCount>
+                            <systemPropertyVariables>
+                                <browser>${browser}</browser>
+                                <screenshotDirectory>${project.build.directory}/screenshots</screenshotDirectory>
+                                <remoteDriver>${remote}</remoteDriver>
+                                <gridURL>${seleniumGridURL}</gridURL>
+                                <desiredPlatform>${platform}</desiredPlatform>
+                                <desiredBrowserVersion>${browserVersion}</desiredBrowserVersion>
+                                <proxyEnabled>${proxyEnabled}</proxyEnabled>
+                                <proxyHost>${proxyHost}</proxyHost>
+                                <proxyPort>${proxyPort}</proxyPort>
+
+                                <!--Set properties passed in by the driver binary downloader-->
+                                <phantomjs.binary.path>${phantomjs.binary.path}</phantomjs.binary.path>
+                                <webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
+                                <webdriver.ie.driver>${webdriver.ie.driver}</webdriver.ie.driver>
+                                <webdriver.opera.driver>${webdriver.opera.driver}</webdriver.opera.driver>
+                                <webdriver.gecko.driver>${webdriver.gecko.driver}</webdriver.gecko.driver>
+                                <webdriver.edge.driver>${webdriver.edge.driver}</webdriver.edge.driver>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <!--This goal makes the build fail if you have test failures-->
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <!-- any phase before your app deploys -->
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>set-system-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <properties>
+                                        <property>
+                                            <name>webdriver.chrome.driver</name>
+                                            <value>${webdriver.chrome.driver}</value>
+                                        </property>
+                                    </properties>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+
+            </build>
 
 </project>

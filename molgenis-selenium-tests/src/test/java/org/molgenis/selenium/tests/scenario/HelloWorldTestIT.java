@@ -7,13 +7,19 @@ import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 
-public class HelloWorldTest extends TestBaseSetup
+public class HelloWorldTestIT extends TestBaseSetup
 {
 	private WebDriver webDriver;
 
 	@BeforeClass
-	public void setUp()
+	public void setUp() throws Exception
 	{
+		System.out.println(System.getProperty("browser"));
+		System.out.println(System.getProperty("screenshotDirectory"));
+		System.out.println(System.getProperty("phantomjs.binary.path"));
+		System.out.println(System.getProperty("webdriver.chrome.driver"));
+		System.out.println(System.getProperty("screenshotDirectory"));
+		
 		webDriver = getDriver();
 	}
 

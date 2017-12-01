@@ -12,8 +12,11 @@ public class BasePageTest extends TestBaseSetup
 	private WebDriver webDriver;
 
 	@BeforeClass
-	public void setUp()
+	public void setUp() throws Exception
 	{
+		System.out.println(System.getProperty("browser"));
+		System.out.println(System.getProperty("phantomjs.binary.path"));
+		System.out.println(System.getProperty("webdriver.chrome.driver"));
 		webDriver = getDriver();
 	}
 

@@ -7,15 +7,18 @@ import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class AdminLoginTest extends TestBaseSetup
+public class AdminLoginTestIT extends TestBaseSetup
 {
 	private WebDriver webDriver;
 	private LoginPage loginPage;
 	private BasePage basePage;
 
 	@BeforeClass
-	public void setUp()
+	public void setUp() throws Exception
 	{
+		System.out.println(System.getProperty("browser"));
+		System.out.println(System.getProperty("phantomjs.binary.path"));
+		System.out.println(System.getProperty("webdriver.chrome.driver"));
 		webDriver = getDriver();
 	}
 
