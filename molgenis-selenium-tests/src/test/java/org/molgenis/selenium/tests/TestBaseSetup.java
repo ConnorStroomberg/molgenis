@@ -6,6 +6,12 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
+import java.io.File;
+import java.io.UncheckedIOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 public class TestBaseSetup {
@@ -32,19 +38,34 @@ public class TestBaseSetup {
 		}
 	}
 
-	private static WebDriver initChromeDriver(String appURL) {
+	private String getLocalDriverBinaryLocation(String driverName){
+		URL resource = TestBaseSetup.class.getResource(File.separator + driverName);
+		try
+		{
+			return Paths.get(resource.toURI()).toAbsolutePath().toString();
+		}
+		catch (URISyntaxException e)
+		{
+			System.out.println("Could not find local selenium driver with name " + driverName);
+			e.printStackTrace();
+		}
+		return "";
+	}
+
+	private WebDriver initChromeDriver(String appURL) {
 		System.out.println("Launching google chrome with new profile..");
-		String driverPath =  environmentVariables.getOrDefault("selenium.chrome.diver.path", "/Users/connorstroomberg/Downloads/chromedriver");
-		System.setProperty("webdriver.chrome.driver", driverPath
-				+ "chromedriver.exe");
+		String driverLocation = getLocalDriverBinaryLocation("chromedriver");
+		System.setProperty("webdriver.chrome.driver", driverLocation);
 		WebDriver driver = new ChromeDriver();
 		driver.manage().window().maximize();
 		driver.navigate().to(appURL);
 		return driver;
 	}
 
-	private static WebDriver initFirefoxDriver(String appURL) {
+	private WebDriver initFirefoxDriver(String appURL) {
 		System.out.println("Launching Firefox browser..");
+		String driverLocation = getLocalDriverBinaryLocation("geckodriver");
+		System.setProperty("webdriver.gecko.driver", driverLocation);
 		WebDriver driver = new FirefoxDriver();
 		driver.manage().window().maximize();
 		driver.navigate().to(appURL);
@@ -60,7 +81,7 @@ public class TestBaseSetup {
 			setDriver(browserType, appURL);
 
 		} catch (Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 	}
 
