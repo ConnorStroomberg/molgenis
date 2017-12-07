@@ -6,24 +6,26 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.hamcrest.Matchers;
 import org.molgenis.api.tests.rest.v1.RestControllerIT;
-import org.molgenis.api.tests.utils.RestTestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import utils.RestTestUtils;
 
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static io.restassured.RestAssured.given;
-import static org.molgenis.api.tests.utils.RestTestUtils.*;
-import static org.molgenis.api.tests.utils.RestTestUtils.Permission.*;
 import static org.molgenis.data.meta.model.AttributeMetadata.ATTRIBUTE_META_DATA;
 import static org.molgenis.data.meta.model.EntityTypeMetadata.ENTITY_TYPE_META_DATA;
 import static org.molgenis.data.meta.model.PackageMetadata.PACKAGE;
 import static org.molgenis.file.model.FileMetaMetaData.FILE_META;
 import static org.molgenis.security.owned.OwnedEntityType.OWNED;
+import static utils.RestTestUtils.*;
+import static utils.RestTestUtils.Permission.COUNT;
+import static utils.RestTestUtils.Permission.READ;
+import static utils.RestTestUtils.Permission.WRITE;
 
 public class RestControllerV2IT
 {

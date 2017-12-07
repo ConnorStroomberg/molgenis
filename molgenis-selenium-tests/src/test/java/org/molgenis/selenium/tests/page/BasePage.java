@@ -13,6 +13,7 @@ public class BasePage
 
 	private By signInBtnSelector = By.id("open-button");
 	private By signOutBtnSelector = By.id("signout-button");
+	private By navigatorMenuItemSelector = By.linkText("Navigator");
 
 
 	public BasePage(WebDriver driver)
@@ -34,6 +35,11 @@ public class BasePage
 				.until(ExpectedConditions.presenceOfElementLocated(signOutBtnSelector));
 	}
 
+	public WebElement getNavigatorMenuItem() {
+		return (new WebDriverWait(driver, 10))
+				.until(ExpectedConditions.presenceOfElementLocated(navigatorMenuItemSelector));
+	}
+
 	public boolean verifyBasePageTitle() {
 		return getPageTitle().contains(PAGE_TITLE);
 	}
@@ -49,5 +55,9 @@ public class BasePage
 
 	public void clickOnSignIn() {
 		getSignInBtn().click();
+	}
+
+	public void clickOnNavigatorMenuItem() {
+		getNavigatorMenuItem().click();
 	}
 }

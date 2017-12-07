@@ -2,7 +2,6 @@ package org.molgenis.api.tests.beacon;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
-import org.molgenis.api.tests.utils.RestTestUtils;
 import org.molgenis.beacon.controller.BeaconController;
 import org.molgenis.data.rest.v2.RestControllerV2;
 import org.slf4j.Logger;
@@ -12,6 +11,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.collections.Maps;
 import org.testng.util.Strings;
+import utils.RestTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,9 +21,9 @@ import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
-import static org.molgenis.api.tests.utils.RestTestUtils.*;
-import static org.molgenis.api.tests.utils.RestTestUtils.Permission.READ;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static utils.RestTestUtils.*;
+import static utils.RestTestUtils.Permission.READ;
 
 public class BeaconAPIIT
 {

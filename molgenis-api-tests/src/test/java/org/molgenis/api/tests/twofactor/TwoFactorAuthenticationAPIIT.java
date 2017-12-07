@@ -16,7 +16,7 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
-import static org.molgenis.api.tests.utils.RestTestUtils.*;
+import static utils.RestTestUtils.*;
 
 public class TwoFactorAuthenticationAPIIT
 {

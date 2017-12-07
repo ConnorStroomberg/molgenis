@@ -1,4 +1,4 @@
-package org.molgenis.api.tests.utils;
+package utils;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;

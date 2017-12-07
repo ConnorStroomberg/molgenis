@@ -6,7 +6,7 @@ import io.restassured.response.ValidatableResponse;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.hamcrest.Matchers;
-import org.molgenis.api.tests.utils.RestTestUtils;
+import utils.RestTestUtils;
 import org.slf4j.Logger;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -23,11 +23,13 @@ import java.util.Properties;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static io.restassured.RestAssured.given;
-import static org.molgenis.api.tests.utils.RestTestUtils.*;
-import static org.molgenis.api.tests.utils.RestTestUtils.Permission.*;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.testng.Assert.assertEquals;
 import static org.testng.collections.Maps.newHashMap;
+import static utils.RestTestUtils.*;
+import static utils.RestTestUtils.Permission.READ;
+import static utils.RestTestUtils.Permission.WRITE;
+import static utils.RestTestUtils.Permission.WRITEMETA;
 
 /**
  * Tests each endpoint of the V2 Rest Api through http calls

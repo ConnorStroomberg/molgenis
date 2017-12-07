@@ -977,5 +977,6 @@
         <module>molgenis-util</module>
         <module>molgenis-web</module>
         <module>molgenis-beacon</module>
+        <module>molgenis-test-utils</module>
     </modules>
 </project>

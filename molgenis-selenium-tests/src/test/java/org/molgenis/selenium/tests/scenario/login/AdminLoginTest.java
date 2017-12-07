@@ -32,7 +32,7 @@ public class AdminLoginTest extends TestBaseSetup
 		loginPage.enterPassword("admin");
 		loginPage.clickOnSignIn();
 
-		Assert.assertTrue(basePage.verifySignOutBtn(), "Expexted signout btn not visible, was login successful ?");
+		Assert.assertTrue(basePage.verifySignOutBtn(), "Expected sign-out btn not visible, was login successful ?");
 
 	}
 }

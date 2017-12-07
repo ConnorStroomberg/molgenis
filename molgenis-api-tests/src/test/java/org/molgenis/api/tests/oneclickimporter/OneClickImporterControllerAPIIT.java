@@ -28,11 +28,11 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
-import static org.molgenis.api.tests.utils.RestTestUtils.*;
-import static org.molgenis.api.tests.utils.RestTestUtils.Permission.READ;
-import static org.molgenis.api.tests.utils.RestTestUtils.Permission.WRITE;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.testng.Assert.assertTrue;
+import static utils.RestTestUtils.*;
+import static utils.RestTestUtils.Permission.READ;
+import static utils.RestTestUtils.Permission.WRITE;
 
 public class OneClickImporterControllerAPIIT
 {
