@@ -3,8 +3,12 @@ package org.molgenis.selenium.tests.page;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import javax.annotation.Nullable;
+
+import static org.molgenis.selenium.tests.TestBaseSetup.DEFAULT_TIME_OUT_IN_SECONDS;
 
 public class LoginPage
 {
@@ -18,6 +22,20 @@ public class LoginPage
 	private By loginBtnSelector = By.id("signin-button");
 	private By errorDivSelector = By.id("alert-container");
 
+	private WebElement getNameInput() {
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
+				.until(ExpectedConditions.presenceOfElementLocated(userNameInputSelector));
+	}
+
+	private WebElement getPasswordInput() {
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
+				.until(ExpectedConditions.presenceOfElementLocated(passwordInputSelector));
+	}
+
+	private WebElement getSignInButton() {
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
+				.until(ExpectedConditions.presenceOfElementLocated(loginBtnSelector));
+	}
 
 	public LoginPage(WebDriver driver)
 	{
@@ -40,18 +58,25 @@ public class LoginPage
 	}
 
 	public void enterUserName(String userName) {
-		WebElement userNameTextInput = driver.findElement(this.userNameInputSelector);
+		WebElement userNameTextInput = getNameInput();
 		userNameTextInput.sendKeys(userName);
 	}
 
 	public void enterPassword(String password) {
-		WebElement passwordTxtBox = driver.findElement(passwordInputSelector);
+		WebElement passwordTxtBox = getPasswordInput();
 		passwordTxtBox.sendKeys(password);
 	}
 
 	public void clickOnSignIn() {
-		WebElement signInBtn = driver.findElement(loginBtnSelector);
+		WebElement signInBtn = getSignInButton();
 		signInBtn.click();
+	}
+
+	public void signIn(String userName, String password)
+	{
+		enterUserName(userName);
+		enterPassword(password);
+		clickOnSignIn();
 	}
 
 	@Nullable

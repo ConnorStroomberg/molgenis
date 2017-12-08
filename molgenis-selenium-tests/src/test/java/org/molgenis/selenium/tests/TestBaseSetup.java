@@ -19,6 +19,8 @@ import java.util.Map;
 
 public class TestBaseSetup {
 
+	public final static long DEFAULT_TIME_OUT_IN_SECONDS = 10L;
+
 	private final static Map<String, String> environmentVariables = System.getenv();
 
 	private static final String USERNAME = environmentVariables.get("selenium.sauce.user");

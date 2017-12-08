@@ -6,6 +6,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import static org.molgenis.selenium.tests.TestBaseSetup.DEFAULT_TIME_OUT_IN_SECONDS;
+
 public class NavigatorPage
 {
 	private WebDriver driver;
@@ -19,13 +21,13 @@ public class NavigatorPage
 
 	public WebElement getNavigatorTable()
 	{
-		return (new WebDriverWait(driver, 10))
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
 				.until(ExpectedConditions.presenceOfElementLocated(navigatorTableSelector));
 	}
 
 	public WebElement getPackageLinkByText(String packageLinkText)
 	{
-		return (new WebDriverWait(driver, 10))
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
 				.until(ExpectedConditions.presenceOfElementLocated(By.linkText(packageLinkText)));
 	}
 

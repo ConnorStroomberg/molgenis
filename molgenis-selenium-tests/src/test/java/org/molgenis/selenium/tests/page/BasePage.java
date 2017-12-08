@@ -6,6 +6,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import static org.molgenis.selenium.tests.TestBaseSetup.DEFAULT_TIME_OUT_IN_SECONDS;
+
 public class BasePage
 {
 	private static final String PAGE_TITLE = "MOLGENIS";
@@ -26,17 +28,17 @@ public class BasePage
 	}
 
 	public WebElement getSignInBtn() {
-		return (new WebDriverWait(driver, 10))
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
 				.until(ExpectedConditions.presenceOfElementLocated(signInBtnSelector));
 	}
 
 	public WebElement getSignOutBtn() {
-		return (new WebDriverWait(driver, 10))
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
 				.until(ExpectedConditions.presenceOfElementLocated(signOutBtnSelector));
 	}
 
 	public WebElement getNavigatorMenuItem() {
-		return (new WebDriverWait(driver, 10))
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
 				.until(ExpectedConditions.presenceOfElementLocated(navigatorMenuItemSelector));
 	}
 
