@@ -42,8 +42,8 @@ public class BrowsePackagesAndEntities extends TestBaseSetup
 		webDriver = getDriver();
 
 		LOG.info("Read environment variables");
-		String envHost = System.getProperty("REST_TEST_HOST");
-		RestAssured.baseURI = Strings.isNullOrEmpty(envHost) ? System.getenv().get("selenium.app.url") : envHost;
+		String envHost = System.getProperty("selenium.app.url");
+		RestAssured.baseURI = Strings.isNullOrEmpty(envHost) ? "http://localhost:8080" : envHost;
 		LOG.info("baseURI: " + RestAssured.baseURI);
 
 		String envAdminName = System.getProperty("REST_TEST_ADMIN_NAME");

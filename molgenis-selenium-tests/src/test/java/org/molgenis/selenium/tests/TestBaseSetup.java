@@ -55,9 +55,10 @@ public class TestBaseSetup {
 		{
 			return Paths.get(resource.toURI()).toAbsolutePath().toString();
 		}
-		catch (URISyntaxException e)
+		catch (Exception e)
 		{
 			System.out.println("Could not find local selenium driver with name " + driverName);
+			System.out.println("Please download the driver for you os and place it in the resource folder");
 			e.printStackTrace();
 		}
 		return "";
