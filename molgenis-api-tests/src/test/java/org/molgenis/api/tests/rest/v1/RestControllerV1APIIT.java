@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import org.hamcrest.Matchers;
-import org.molgenis.api.tests.utils.RestTestUtils;
+
 import org.molgenis.data.rest.EntityCollectionRequest;
 import org.molgenis.data.rest.EntityTypeRequest;
 import org.slf4j.Logger;
@@ -13,6 +13,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import utils.RestTestUtils;
 
 import java.io.File;
 import java.net.URI;
@@ -24,8 +25,10 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.io.Resources.getResource;
 import static io.restassured.RestAssured.given;
-import static org.molgenis.api.tests.utils.RestTestUtils.*;
-import static org.molgenis.api.tests.utils.RestTestUtils.Permission.*;
+import static utils.RestTestUtils.*;
+import static utils.RestTestUtils.Permission.READ;
+import static utils.RestTestUtils.Permission.WRITE;
+import static utils.RestTestUtils.Permission.WRITEMETA;
 
 /**
  * Tests each endpoint of the V1 Rest Api through http calls

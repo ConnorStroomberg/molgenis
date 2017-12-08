@@ -16,7 +16,7 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
-import static org.molgenis.api.tests.utils.RestTestUtils.*;
+import static utils.RestTestUtils.*;
 
 public class TwoFactorAuthenticationAPIIT
 {
@@ -37,7 +37,7 @@ public class TwoFactorAuthenticationAPIIT
 	 * Pass down system properties via the mvn commandline argument
 	 * <p>
 	 * example:
-	 * mvn test -Dtest="RestTwoFactorAuthenticationIT" -DREST_TEST_HOST="https://molgenis01.gcc.rug.nl" -DREST_TEST_ADMIN_NAME="admin" -DREST_TEST_ADMIN_PW="admin"
+	 * mvn test -Dtest="TwoFactorAuthenticaitonAPIIT" -DREST_TEST_HOST="https://molgenis01.gcc.rug.nl" -DREST_TEST_ADMIN_NAME="admin" -DREST_TEST_ADMIN_PW="admin"
 	 */
 	@BeforeClass
 	public void beforeClass()

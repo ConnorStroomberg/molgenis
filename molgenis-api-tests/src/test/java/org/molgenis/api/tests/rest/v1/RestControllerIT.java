@@ -4,16 +4,16 @@ import com.google.common.base.Strings;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import org.hamcrest.Matchers;
-import org.molgenis.api.tests.utils.RestTestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import utils.RestTestUtils;
 
 import static io.restassured.RestAssured.given;
-import static org.molgenis.api.tests.utils.RestTestUtils.*;
-import static org.molgenis.api.tests.utils.RestTestUtils.Permission.*;
+import static utils.RestTestUtils.*;
+import static utils.RestTestUtils.Permission.*;
 
 public class RestControllerIT
 {
