@@ -19,11 +19,11 @@ import static utils.RestTestUtils.*;
 import static utils.RestTestUtils.Permission.READ;
 import static utils.RestTestUtils.Permission.WRITE;
 
-public class BrowsePackagesAndEntities extends TestBaseSetup
+public class BrowsePackagesAndEntitiesNonSuper extends TestBaseSetup
 {
 	private WebDriver webDriver;
 
-	private static final Logger LOG = getLogger(BrowsePackagesAndEntities.class);
+	private static final Logger LOG = getLogger(BrowsePackagesAndEntitiesNonSuper.class);
 
 	private static final String TEST_USER = "browse_pack_and_ent_test_user";
 	private static final String TEST_USER_PASSWORD = "browse_pack_and_ent_test_user_password";
@@ -69,8 +69,6 @@ public class BrowsePackagesAndEntities extends TestBaseSetup
 		grantPluginRights(adminToken, testUserId, "navigator");
 
 		testUserToken = login(TEST_USER, TEST_USER_PASSWORD);
-
-		webDriver = getDriver();
 	}
 
 	@Test
@@ -81,12 +79,14 @@ public class BrowsePackagesAndEntities extends TestBaseSetup
 
 		loginPage = new LoginPage(webDriver);
 		loginPage.signIn(TEST_USER, TEST_USER_PASSWORD);
-		Assert.assertTrue(basePage.verifySignOutBtn(), "Expected sign-out btn not visible, was login successful ?");
+		Assert.assertTrue(basePage.verifySignOutBtn(),
+				"Expected sign-out btn not visible, was login successful ?");
 
 		basePage.clickOnNavigatorMenuItem();
 
 		navigatorPage = new NavigatorPage(webDriver);
-		navigatorPage.verifyPackageLinkWithName("Default");
+		Assert.assertTrue(navigatorPage.verifyPackageLinkWithName("Default"),
+				"Expected Package link with name \"Default\" to be percent");
 	}
 
 	@AfterClass(alwaysRun = true)
