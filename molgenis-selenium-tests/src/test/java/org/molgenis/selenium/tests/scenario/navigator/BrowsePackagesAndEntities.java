@@ -42,7 +42,7 @@ public class BrowsePackagesAndEntities extends TestBaseSetup
 		webDriver = getDriver();
 
 		LOG.info("Read environment variables");
-		String envHost = System.getProperty("selenium.app.url");
+		String envHost = System.getenv("selenium.app.url");
 		RestAssured.baseURI = Strings.isNullOrEmpty(envHost) ? "http://localhost:8080" : envHost;
 		LOG.info("baseURI: " + RestAssured.baseURI);
 
@@ -80,9 +80,7 @@ public class BrowsePackagesAndEntities extends TestBaseSetup
 		basePage.clickOnSignIn();
 
 		loginPage = new LoginPage(webDriver);
-		loginPage.enterUserName("admin");
-		loginPage.enterPassword("admin");
-		loginPage.clickOnSignIn();
+		loginPage.signIn(TEST_USER, TEST_USER_PASSWORD);
 		Assert.assertTrue(basePage.verifySignOutBtn(), "Expected sign-out btn not visible, was login successful ?");
 
 		basePage.clickOnNavigatorMenuItem();
