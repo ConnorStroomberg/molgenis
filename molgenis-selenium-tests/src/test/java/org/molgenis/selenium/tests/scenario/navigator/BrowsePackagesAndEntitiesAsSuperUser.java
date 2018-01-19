@@ -42,7 +42,8 @@ public class BrowsePackagesAndEntitiesAsSuperUser extends TestBaseSetup
 	}
 
 	@Test
-	public void browse() {
+	public void browse()
+	{
 
 		//A list off packages and entities should be shown at the root level
 		Assert.assertTrue(navigatorPage.verifyPackageLinkWithName("Default"));

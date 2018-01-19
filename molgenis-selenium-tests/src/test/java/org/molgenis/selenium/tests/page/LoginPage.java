@@ -22,19 +22,22 @@ public class LoginPage
 	private By loginBtnSelector = By.id("signin-button");
 	private By errorDivSelector = By.id("alert-container");
 
-	private WebElement getNameInput() {
-		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
-				.until(ExpectedConditions.presenceOfElementLocated(userNameInputSelector));
+	private WebElement getNameInput()
+	{
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS)).until(
+				ExpectedConditions.presenceOfElementLocated(userNameInputSelector));
 	}
 
-	private WebElement getPasswordInput() {
-		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
-				.until(ExpectedConditions.presenceOfElementLocated(passwordInputSelector));
+	private WebElement getPasswordInput()
+	{
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS)).until(
+				ExpectedConditions.presenceOfElementLocated(passwordInputSelector));
 	}
 
-	private WebElement getSignInButton() {
-		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
-				.until(ExpectedConditions.presenceOfElementLocated(loginBtnSelector));
+	private WebElement getSignInButton()
+	{
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS)).until(
+				ExpectedConditions.presenceOfElementLocated(loginBtnSelector));
 	}
 
 	public LoginPage(WebDriver driver)
@@ -42,32 +45,38 @@ public class LoginPage
 		this.driver = driver;
 	}
 
-	public String loginPageTitle() {
+	public String loginPageTitle()
+	{
 		return driver.getTitle();
 	}
 
-	public boolean verifyLoginPageTitle() {
+	public boolean verifyLoginPageTitle()
+	{
 		return loginPageTitle().contains(PAGE_TITLE);
 	}
 
-	public boolean verifyLoginPageLabel() {
+	public boolean verifyLoginPageLabel()
+	{
 		WebElement element = driver.findElement(loginModalLabelSelector);
 		String pageText = element.getText();
 		String expectedPageText = "Sign in";
 		return pageText.contains(expectedPageText);
 	}
 
-	public void enterUserName(String userName) {
+	public void enterUserName(String userName)
+	{
 		WebElement userNameTextInput = getNameInput();
 		userNameTextInput.sendKeys(userName);
 	}
 
-	public void enterPassword(String password) {
+	public void enterPassword(String password)
+	{
 		WebElement passwordTxtBox = getPasswordInput();
 		passwordTxtBox.sendKeys(password);
 	}
 
-	public void clickOnSignIn() {
+	public void clickOnSignIn()
+	{
 		WebElement signInBtn = getSignInButton();
 		signInBtn.click();
 	}
@@ -80,10 +89,12 @@ public class LoginPage
 	}
 
 	@Nullable
-	public String getErrorMessage() {
+	public String getErrorMessage()
+	{
 		String strErrorMsg = null;
 		WebElement errorMsg = driver.findElement(errorDivSelector);
-		if(errorMsg != null && errorMsg.isDisplayed()) {
+		if (errorMsg != null && errorMsg.isDisplayed())
+		{
 			strErrorMsg = errorMsg.getText();
 		}
 		return strErrorMsg;

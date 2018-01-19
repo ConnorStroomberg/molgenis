@@ -17,49 +17,56 @@ public class BasePage
 	private By signOutBtnSelector = By.id("signout-button");
 	private By navigatorMenuItemSelector = By.linkText("Navigator");
 
-
 	public BasePage(WebDriver driver)
 	{
 		this.driver = driver;
 	}
 
-	public String getPageTitle(){
+	public String getPageTitle()
+	{
 		return driver.getTitle();
 	}
 
-	public WebElement getSignInBtn() {
-		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
-				.until(ExpectedConditions.presenceOfElementLocated(signInBtnSelector));
+	public WebElement getSignInBtn()
+	{
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS)).until(
+				ExpectedConditions.presenceOfElementLocated(signInBtnSelector));
 	}
 
-	public WebElement getSignOutBtn() {
-		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
-				.until(ExpectedConditions.presenceOfElementLocated(signOutBtnSelector));
+	public WebElement getSignOutBtn()
+	{
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS)).until(
+				ExpectedConditions.presenceOfElementLocated(signOutBtnSelector));
 	}
 
-	public WebElement getNavigatorMenuItem() {
-		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
-				.until(ExpectedConditions.presenceOfElementLocated(navigatorMenuItemSelector));
+	public WebElement getNavigatorMenuItem()
+	{
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS)).until(
+				ExpectedConditions.presenceOfElementLocated(navigatorMenuItemSelector));
 	}
 
-	public boolean verifyBasePageTitle() {
+	public boolean verifyBasePageTitle()
+	{
 		return getPageTitle().contains(PAGE_TITLE);
 	}
 
-	public boolean verifySignInBtn() {
+	public boolean verifySignInBtn()
+	{
 		return getSignInBtn().isDisplayed();
 	}
 
-	public boolean verifySignOutBtn() {
+	public boolean verifySignOutBtn()
+	{
 		return getSignOutBtn().isDisplayed();
 	}
 
-
-	public void clickOnSignIn() {
+	public void clickOnSignIn()
+	{
 		getSignInBtn().click();
 	}
 
-	public void clickOnNavigatorMenuItem() {
+	public void clickOnNavigatorMenuItem()
+	{
 		getNavigatorMenuItem().click();
 	}
 }

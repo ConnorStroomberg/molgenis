@@ -7,7 +7,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,20 +26,20 @@ public class NavigatorPage
 
 	public WebElement getNavigatorTable()
 	{
-		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
-				.until(ExpectedConditions.presenceOfElementLocated(navigatorTableSelector));
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS)).until(
+				ExpectedConditions.presenceOfElementLocated(navigatorTableSelector));
 	}
 
 	private WebElement getPackageLinkByText(String packageLinkText)
 	{
-		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
-				.until(ExpectedConditions.presenceOfElementLocated(By.linkText(packageLinkText)));
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS)).until(
+				ExpectedConditions.presenceOfElementLocated(By.linkText(packageLinkText)));
 	}
 
 	private List<WebElement> getBreadCrumbLinks()
 	{
-		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS))
-				.until(ExpectedConditions.presenceOfAllElementsLocatedBy(breadCrumbsSelector));
+		return (new WebDriverWait(driver, DEFAULT_TIME_OUT_IN_SECONDS)).until(
+				ExpectedConditions.presenceOfAllElementsLocatedBy(breadCrumbsSelector));
 	}
 
 	public boolean verifyPackageLinkWithName(String name)
@@ -53,16 +52,16 @@ public class NavigatorPage
 	{
 		List<WebElement> breadCrumbLinks = getBreadCrumbLinks();
 
-		List<String> actualTexts = breadCrumbLinks
-				.stream()
-				.map(WebElement::getText)
-				.filter(StringUtils::isNotEmpty) // home item
-				.collect(Collectors.toList());
+		List<String> actualTexts = breadCrumbLinks.stream()
+												  .map(WebElement::getText)
+												  .filter(StringUtils::isNotEmpty) // home item
+												  .collect(Collectors.toList());
 
 		boolean verified = true;
-		for(int index = 0; index < crumbTexts.size(); index++)
+		for (int index = 0; index < crumbTexts.size(); index++)
 		{
-			if(!crumbTexts.get(index).equals(actualTexts.get(index))){
+			if (!crumbTexts.get(index).equals(actualTexts.get(index)))
+			{
 				verified = false;
 			}
 		}

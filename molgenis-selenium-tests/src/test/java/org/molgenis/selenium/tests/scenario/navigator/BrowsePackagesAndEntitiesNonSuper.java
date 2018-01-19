@@ -72,15 +72,15 @@ public class BrowsePackagesAndEntitiesNonSuper extends TestBaseSetup
 	}
 
 	@Test
-	public void openNavigator() {
+	public void openNavigator()
+	{
 
 		basePage = new BasePage(webDriver);
 		basePage.clickOnSignIn();
 
 		loginPage = new LoginPage(webDriver);
 		loginPage.signIn(TEST_USER, TEST_USER_PASSWORD);
-		Assert.assertTrue(basePage.verifySignOutBtn(),
-				"Expected sign-out btn not visible, was login successful ?");
+		Assert.assertTrue(basePage.verifySignOutBtn(), "Expected sign-out btn not visible, was login successful ?");
 
 		basePage.clickOnNavigatorMenuItem();
 

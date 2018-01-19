@@ -9,15 +9,13 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
 import java.io.File;
-import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
-public class TestBaseSetup {
+public class TestBaseSetup
+{
 
 	public final static long DEFAULT_TIME_OUT_IN_SECONDS = 10L;
 
@@ -29,12 +27,15 @@ public class TestBaseSetup {
 
 	private WebDriver driver;
 
-	public WebDriver getDriver() {
+	public WebDriver getDriver()
+	{
 		return driver;
 	}
 
-	private void setDriver(String browserType, String appURL) {
-		switch (browserType) {
+	private void setDriver(String browserType, String appURL)
+	{
+		switch (browserType)
+		{
 			case "chrome":
 				driver = initChromeDriver(appURL);
 				break;
@@ -45,13 +46,14 @@ public class TestBaseSetup {
 				driver = initRemoteDriver(appURL);
 				break;
 			default:
-				System.out.println("browser : " + browserType
-						+ " is invalid, Launching Firefox as browser of choice..");
+				System.out.println(
+						"browser : " + browserType + " is invalid, Launching Firefox as browser of choice..");
 				driver = initFirefoxDriver(appURL);
 		}
 	}
 
-	private String getLocalDriverBinaryLocation(String driverName){
+	private String getLocalDriverBinaryLocation(String driverName)
+	{
 		URL resource = TestBaseSetup.class.getResource(File.separator + driverName);
 		try
 		{
@@ -66,7 +68,8 @@ public class TestBaseSetup {
 		return "";
 	}
 
-	private WebDriver initChromeDriver(String appURL) {
+	private WebDriver initChromeDriver(String appURL)
+	{
 		System.out.println("Launching google chrome with new profile..");
 		String driverLocation = getLocalDriverBinaryLocation("chromedriver");
 		System.setProperty("webdriver.chrome.driver", driverLocation);
@@ -76,7 +79,8 @@ public class TestBaseSetup {
 		return driver;
 	}
 
-	private WebDriver initFirefoxDriver(String appURL) {
+	private WebDriver initFirefoxDriver(String appURL)
+	{
 		System.out.println("Launching Firefox browser..");
 		String driverLocation = getLocalDriverBinaryLocation("geckodriver");
 		System.setProperty("webdriver.gecko.driver", driverLocation);
@@ -93,7 +97,6 @@ public class TestBaseSetup {
 		caps.setCapability("version", "62");
 		caps.setCapability("app", "appURL");
 
-
 		WebDriver driver = null;
 		try
 		{
@@ -109,22 +112,27 @@ public class TestBaseSetup {
 		return driver;
 	}
 
-
 	@BeforeClass
-	public void initializeTestBaseSetup() {
+	public void initializeTestBaseSetup()
+	{
 		String browserType = environmentVariables.getOrDefault("selenium.browser.type", "remote");
 		String appURL = environmentVariables.getOrDefault("selenium.app.url", "http://localhost:8080");
-		try {
+		try
+		{
 			setDriver(browserType, appURL);
 
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 	}
 
 	@AfterClass(alwaysRun = true)
-	public void tearDown() {
-		if(driver != null) {
+	public void tearDown()
+	{
+		if (driver != null)
+		{
 			driver.quit();
 		}
 	}

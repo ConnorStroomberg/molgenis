@@ -21,7 +21,8 @@ public class AdminLoginTest extends TestBaseSetup
 	}
 
 	@Test
-	public void verifyLogin() {
+	public void verifyLogin()
+	{
 		System.out.println("Login In functionality details...");
 		basePage = new BasePage(webDriver);
 
