@@ -27,7 +27,8 @@ public class UsersGroupsPopulatorImpl implements UsersGroupsPopulator
 	private final UserFactory userFactory;
 	private final GroupFactory groupFactory;
 
-	@Value("${admin.password:@null}")
+	// @Value("${admin.password:@null}")
+	@Value("#{systemEnvironment['MOLGENIS_ADMIN_PASSWORD']}")
 	private String adminPassword;
 	@Value("${admin.email:molgenis+admin@gmail.com}")
 	private String adminEmail;

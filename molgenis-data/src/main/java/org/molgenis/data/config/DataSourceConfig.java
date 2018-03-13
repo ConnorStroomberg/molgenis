@@ -24,11 +24,17 @@ public class DataSourceConfig
 
 	@Value("${db_driver:org.postgresql.Driver}")
 	private String dbDriverClass;
-	@Value("${db_uri:@null}")
+
+	//@Value("${db_uri:@null}")
+	@Value("#{systemEnvironment['MOLGENIS_DB_URI']}")
 	private String dbJdbcUri;
-	@Value("${db_user:@null}")
+
+	//@Value("${db_user:@null}")
+	@Value("#{systemEnvironment['MOLGENIS_DB_USER']}")
 	private String dbUser;
-	@Value("${db_password:@null}")
+
+	//@Value("${db_password:@null}")
+	@Value("#{systemEnvironment['MOLGENIS_DB_PASSWORD']}")
 	private String dbPassword;
 
 	@Bean
