@@ -18,10 +18,12 @@ import static org.molgenis.data.meta.AttributeType.COMPOUND;
 
 public class AnnotatorUtils
 {
+	private final static Map<String, String> environmentVariables = System.getenv();
+
 	public static String getAnnotatorResourceDir()
 	{
 		// Annotators include files/tools
-		String molgenisHomeDir = System.getProperty("molgenis.home");
+		String molgenisHomeDir = environmentVariables.get("MOLGENIS_HOME");
 
 		if (molgenisHomeDir != null)
 		{

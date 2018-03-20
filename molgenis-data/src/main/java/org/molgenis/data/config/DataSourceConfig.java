@@ -65,6 +65,7 @@ public class DataSourceConfig
 		dataSource.setMaxPoolSize(MAX_POOL_SIZE);
 		dataSource.setTestConnectionOnCheckin(true);
 		dataSource.setIdleConnectionTestPeriod(120);
+		dataSource.setAcquireRetryAttempts(0); // fore-ever
 
 		Properties properties = dataSource.getProperties();
 		properties.setProperty("reWriteBatchedInserts", "true");

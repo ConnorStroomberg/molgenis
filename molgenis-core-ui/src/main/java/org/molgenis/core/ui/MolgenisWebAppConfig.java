@@ -73,7 +73,8 @@ import static org.molgenis.security.UriConstants.PATH_SEGMENT_APPS;
 @Import({ PlatformConfig.class, RdfConverter.class })
 public abstract class MolgenisWebAppConfig implements WebMvcConfigurer
 {
-	private static final String MOLGENIS_HOME = "molgenis.home";
+	//private static final String MOLGENIS_HOME = "molgenis.home";
+	private final static Map<String, String> environmentVariables = System.getenv();
 
 	@Autowired
 	private DataService dataService;
@@ -241,8 +242,9 @@ public abstract class MolgenisWebAppConfig implements WebMvcConfigurer
 	public static PropertySourcesPlaceholderConfigurer properties()
 	{
 		PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
+
 		Resource[] resources = new Resource[] {
-				new FileSystemResource(System.getProperty(MOLGENIS_HOME) + "/molgenis-server.properties"),
+				new FileSystemResource(environmentVariables.get("MOLGENIS_HOME") + "/molgenis-server.properties"),
 				new ClassPathResource("/molgenis.properties") };
 		pspc.setLocations(resources);
 		pspc.setFileEncoding("UTF-8");
@@ -256,11 +258,11 @@ public abstract class MolgenisWebAppConfig implements WebMvcConfigurer
 	public FileStore fileStore()
 	{
 		// get molgenis home directory
-		String molgenisHomeDir = System.getProperty(MOLGENIS_HOME);
+		String molgenisHomeDir = environmentVariables.get("MOLGENIS_HOME");
 		if (molgenisHomeDir == null)
 		{
 			throw new IllegalArgumentException(
-					String.format("missing required java system property '%s'", MOLGENIS_HOME));
+					String.format("missing required env var for MOLGENIS_HOME"));
 		}
 		if (!molgenisHomeDir.endsWith(File.separator)) molgenisHomeDir = molgenisHomeDir + File.separator;
 
@@ -366,20 +368,20 @@ public abstract class MolgenisWebAppConfig implements WebMvcConfigurer
 		return new MolgenisLocaleResolver(dataService, () -> new Locale(appSettings.getLanguageCode()));
 	}
 
-	@PostConstruct
-	public void validateMolgenisServerProperties()
-	{
-		// validate properties defined in molgenis-server.properties
-		String path = System.getProperty(MOLGENIS_HOME) + File.separator + "molgenis-server.properties";
-		if (environment == null)
-		{
-			throw new RuntimeException("Missing required property 'environment' in " + path
-					+ ", allowed values are [development, production].");
-		}
-		else if (!environment.equals("development") && !environment.equals("production"))
-		{
-			throw new RuntimeException("Invalid value '" + environment + "' for property 'environment' in " + path
-					+ ", allowed values are [development, production].");
-		}
-	}
+//	@PostConstruct
+//	public void validateMolgenisServerProperties()
+//	{
+//		// validate properties defined in molgenis-server.properties
+//		String path = System.getProperty(MOLGENIS_HOME) + File.separator + "molgenis-server.properties";
+//		if (environment == null)
+//		{
+//			throw new RuntimeException("Missing required property 'environment' in " + path
+//					+ ", allowed values are [development, production].");
+//		}
+//		else if (!environment.equals("development") && !environment.equals("production"))
+//		{
+//			throw new RuntimeException("Invalid value '" + environment + "' for property 'environment' in " + path
+//					+ ", allowed values are [development, production].");
+//		}
+//	}
 }
