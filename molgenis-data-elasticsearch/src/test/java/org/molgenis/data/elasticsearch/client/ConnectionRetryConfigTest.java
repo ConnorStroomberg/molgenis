@@ -44,7 +44,14 @@ public class ConnectionRetryConfigTest extends AbstractTestNGSpringContextTests
 			{
 				throw new MolgenisDataException();
 			};
-			return retryTemplate.execute(fail);
+			try
+			{
+				return retryTemplate.execute(fail);
+			}
+			catch (Throwable t)
+			{
+				return null;
+			}
 		});
 
 		result.cancel(true);

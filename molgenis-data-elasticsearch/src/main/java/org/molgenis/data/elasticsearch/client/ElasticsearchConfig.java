@@ -26,10 +26,12 @@ import static java.util.stream.Collectors.toList;
 @Import({ IndexConfig.class, ConnectionRetryConfig.class })
 public class ElasticsearchConfig
 {
-	@Value("${elasticsearch.cluster.name:molgenis}")
+	// @Value("${elasticsearch.cluster.name:molgenis}")
+	@Value("#{systemEnvironment['MOLGENIS_ELASTIC_SEARCH_CLUSTER_NAME']}")
 	private String clusterName;
 
-	@Value("${elasticsearch.transport.addresses:127.0.0.1:9300}")
+	// @Value("${elasticsearch.transport.addresses:127.0.0.1:9300}")
+	@Value("#{systemEnvironment['MOLGENIS_ELASTIC_SEARCH_TRANSPORT_ADDRESS']}")
 	private List<String> transportAddresses;
 
 	final RetryTemplate retryTemplate;
