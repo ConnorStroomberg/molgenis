@@ -98,11 +98,41 @@
       },
       onSubmit () {
         this.isSaving = true
-        const options = {
-          body: JSON.stringify(this.formData)
-        }
         const postDetails = this.dataRowId !== null ? this.dataTableId + '/' + this.dataRowId : this.dataTableId
         const uri = '/api/v1/' + postDetails + '?_method=PUT'
+
+        let options
+
+        if (this.containsFileData()) {
+          const formData = new FormData()
+          Object.entries(this.formData).forEach((pair) => {
+            const [key, value] = pair
+            const isFile = this.formFields.find((field) => {
+              return field.id === key && field.type === 'file' && typeof value !== 'string'
+            })
+            isFile ? formData.append(key, value, value.name) : formData.append(key, value)
+          })
+
+          for (var [key, value] of formData.entries()) {
+            console.log(key, value)
+          }
+
+          options = {
+            headers: {
+              'Accept': '*/*'
+              // 'Content-Type': undefined // these need to be NOT SET, need to update the molgenis-api-client
+              // 'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundary58tSNECfrTAVIuBk'
+            },
+            body: formData,
+            method: 'POST',
+            credentials: 'same-origin'
+          }
+        } else {
+          options = {
+            body: JSON.stringify(this.formData)
+          }
+        }
+
         api.post(uri, options).then(this.goBackToPluginCaller, this.handleError)
       },
       goBackToPluginCaller () {
@@ -133,6 +163,14 @@
         // noinspection JSUnusedLocalSymbols
         const { _meta, _href, ...rowData } = response
         return {_meta, rowData}
+      },
+      containsFileData () {
+        const data = this.formData
+        const fieldsWithFile = this.formFields
+          .filter((field) => field.type === 'file')
+          .find((field) => typeof data[field.id] !== 'string')
+
+        return !!fieldsWithFile
       }
     },
     created: function () {
