@@ -63,9 +63,9 @@
 </template>
 
 <script>
-  import { FormComponent, EntityToFormMapper } from '@molgenis/molgenis-ui-form'
+  import { FormComponent } from '@molgenis/molgenis-ui-form'
   import '../../node_modules/@molgenis/molgenis-ui-form/dist/static/css/molgenis-ui-form.css'
-  import api from '@molgenis/molgenis-api-client'
+  import * as repository from '../repository/dataRowRepository'
 
   export default {
     name: 'DataRowEdit',
@@ -98,42 +98,9 @@
       },
       onSubmit () {
         this.isSaving = true
-        const postDetails = this.dataRowId !== null ? this.dataTableId + '/' + this.dataRowId : this.dataTableId
-        const uri = '/api/v1/' + postDetails + '?_method=PUT'
-
-        let options
-
-        if (this.containsFileData()) {
-          const formData = new FormData()
-          Object.entries(this.formData).forEach((pair) => {
-            const [key, value] = pair
-            const isFile = this.formFields.find((field) => {
-              return field.id === key && field.type === 'file' && typeof value !== 'string'
-            })
-            isFile ? formData.append(key, value, value.name) : formData.append(key, value)
-          })
-
-          for (var [key, value] of formData.entries()) {
-            console.log(key, value)
-          }
-
-          options = {
-            headers: {
-              'Accept': '*/*'
-              // 'Content-Type': undefined // these need to be NOT SET, need to update the molgenis-api-client
-              // 'Content-Type': 'multipart/form-data; boundary=----WebKitFormBoundary58tSNECfrTAVIuBk'
-            },
-            body: formData,
-            method: 'POST',
-            credentials: 'same-origin'
-          }
-        } else {
-          options = {
-            body: JSON.stringify(this.formData)
-          }
-        }
-
-        api.post(uri, options).then(this.goBackToPluginCaller, this.handleError)
+        repository
+          .save(this.formData, this.formFields, this.dataTableId, this.dataRowId)
+          .then(this.goBackToPluginCaller, this.handleError)
       },
       goBackToPluginCaller () {
         window.history.go(-1)
@@ -152,42 +119,12 @@
       initializeForm (mappedData) {
         this.formFields = mappedData.formFields
         this.formData = mappedData.formData
+        this.dataTableLabel = mappedData.formLabel
         this.showForm = true
-      },
-      /**
-       * response mixes data and metadata, this function creates a new object with separate properties for data and metadata
-       * @param response
-       * @returns {{_meta: *, rowData: *}}
-       */
-      parseEditResponse (response) {
-        // noinspection JSUnusedLocalSymbols
-        const { _meta, _href, ...rowData } = response
-        return {_meta, rowData}
-      },
-      containsFileData () {
-        const data = this.formData
-        const fieldsWithFile = this.formFields
-          .filter((field) => field.type === 'file')
-          .find((field) => typeof data[field.id] !== 'string')
-
-        return !!fieldsWithFile
       }
     },
     created: function () {
-      if (this.dataRowId !== null) {
-        api.get('/api/v2/' + this.dataTableId + '/' + this.dataRowId).then((response) => {
-          this.dataTableLabel = response._meta.label
-          const { _meta, rowData } = this.parseEditResponse(response)
-          const mappedData = EntityToFormMapper.generateForm(_meta, rowData, { mapperMode: 'UPDATE' })
-          this.initializeForm(mappedData)
-        }, this.handleError)
-      } else {
-        api.get('/api/v2/' + this.dataTableId + '?num=0').then((response) => {
-          this.dataTableLabel = response.meta.label
-          const mappedData = EntityToFormMapper.generateForm(response.meta, {}, { mapperMode: 'CREATE' })
-          this.initializeForm(mappedData)
-        }, this.handleError)
-      }
+      repository.fetch(this.dataTableId, this.dataRowId).then(this.initializeForm, this.handleError)
     },
     components: {
       FormComponent

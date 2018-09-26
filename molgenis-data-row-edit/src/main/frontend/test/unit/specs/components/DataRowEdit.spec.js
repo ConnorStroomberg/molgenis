@@ -82,9 +82,9 @@ describe('DataRowEdit component', () => {
       const post = td.function('api.post')
       const okeStatus = {status: 'OKE'}
       // update post
-      td.when(post('/api/v1/' + tableId + '/' + rowId + '?_method=PUT', {body: '{"id":"update","a":"a"}'})).thenResolve(okeStatus)
+      td.when(post('/api/v1/' + tableId + '/' + rowId + '?_method=PUT', {body: '{"id":"update","a":"a"}'}, false)).thenResolve(okeStatus)
       // add post
-      td.when(post('/api/v1/' + tableId + '?_method=PUT', {body: '{"id":"create","b":"b"}'})).thenResolve(okeStatus)
+      td.when(post('/api/v1/' + tableId + '?_method=PUT', {body: '{"id":"create","b":"b"}'}, false)).thenResolve(okeStatus)
       td.replace(api, 'post', post)
       td.replace(EntityToFormMapper, 'generateForm', rowForm)
 
