@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.molgenis</groupId>
     <artifactId>molgenis</artifactId>
-    <version>7.2.0-SNAPSHOT</version>
+    <version>7.3.0-SNAPSHOT</version>
   </parent>
   <artifactId>molgenis-security</artifactId>
   <packaging>jar</packaging>
@@ -115,8 +115,12 @@
       <artifactId>spring-security-acl</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.api-client</groupId>
-      <artifactId>google-api-client</artifactId>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-jose</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-oauth2-client</artifactId>
     </dependency>
     <!-- Google 2 factor authentication -->
     <dependency>
