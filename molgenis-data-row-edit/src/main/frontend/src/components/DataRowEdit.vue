@@ -65,7 +65,7 @@
 <script>
   import { FormComponent } from '@molgenis/molgenis-ui-form'
   import '../../node_modules/@molgenis/molgenis-ui-form/dist/static/css/molgenis-ui-form.css'
-  import * as repository from '../repository/dataRowRepository'
+  import * as repository from '@/repository/dataRowRepository'
 
   export default {
     name: 'DataRowEdit',

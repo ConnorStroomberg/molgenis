@@ -1,6 +1,5 @@
 import {shallow} from 'vue-test-utils'
 import DataRowEdit from '@/components/DataRowEdit'
-import {EntityToFormMapper} from '@molgenis/molgenis-ui-form'
 import * as repository from '@/repository/dataRowRepository'
 import td from 'testdouble'
 
@@ -11,12 +10,6 @@ describe('DataRowEdit component', () => {
 
   const tableId = 'testTableId'
   const rowId = 'testRowId'
-  const rowForm = function () {
-    return {
-      formFields: ['a'],
-      formData: {b: 'c'}
-    }
-  }
 
   it('Should have "DataRowEdit" as name.', () => {
     expect(DataRowEdit.name).to.equal('DataRowEdit')
@@ -59,7 +52,6 @@ describe('DataRowEdit component', () => {
   })
 
   describe('methods', () => {
-
     let wrapper
     let mappedCreateData = {
       formFields: ['a'],
@@ -91,7 +83,7 @@ describe('DataRowEdit component', () => {
         propsData: {
           dataTableId: tableId,
           dataRowId: rowId
-        },
+        }
       })
     })
 
@@ -198,7 +190,6 @@ describe('DataRowEdit component', () => {
     })
 
     it('should when rowId is set fetch the data to be edited, and initialize the form', (done) => {
-
       const wrapper = shallow(DataRowEdit, {
         propsData: {
           dataTableId: tableId,
@@ -215,6 +206,5 @@ describe('DataRowEdit component', () => {
         })
       })
     })
-
   })
 })
