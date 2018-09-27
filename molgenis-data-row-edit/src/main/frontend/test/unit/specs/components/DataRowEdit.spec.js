@@ -1,7 +1,7 @@
 import {shallow} from 'vue-test-utils'
 import DataRowEdit from '@/components/DataRowEdit'
 import {EntityToFormMapper} from '@molgenis/molgenis-ui-form'
-import api from '@molgenis/molgenis-api-client'
+import * as repository from '@/repository/dataRowRepository'
 import td from 'testdouble'
 
 describe('DataRowEdit component', () => {
@@ -59,44 +59,45 @@ describe('DataRowEdit component', () => {
   })
 
   describe('methods', () => {
-    const getRowDataResponse = {
-      _href: 'some-href',
-      _meta: {
-        label: 'my-row-data'
-      },
-      foo: 'bar',
-      flub: 'blaf'
-    }
-    // eslint-disable-next-line
-    const formUpdate = {"foo": "bar"}
 
     let wrapper
+    let mappedCreateData = {
+      formFields: ['a'],
+      formData: {a: 'b'},
+      formLabel: 'form label'
+    }
+    let mappedUpdateData = {
+      formFields: ['a'],
+      formData: {a: 'b'},
+      formLabel: 'form label'
+    }
 
     beforeEach(function () {
       td.reset()
 
-      const get = td.function('api.get')
-      td.when(get('/api/v2/' + tableId + '/' + rowId)).thenResolve(getRowDataResponse)
-      td.replace(api, 'get', get)
+      // mock fetch
+      const fetch = td.function('repository.fetch')
+      td.when(fetch(tableId, rowId)).thenResolve(mappedUpdateData)
+      td.when(fetch(tableId, null)).thenResolve(mappedCreateData)
+      td.replace(repository, 'fetch', fetch)
 
-      const post = td.function('api.post')
-      const okeStatus = {status: 'OKE'}
-      // update post
-      td.when(post('/api/v1/' + tableId + '/' + rowId + '?_method=PUT', {body: '{"id":"update","a":"a"}'}, false)).thenResolve(okeStatus)
-      // add post
-      td.when(post('/api/v1/' + tableId + '?_method=PUT', {body: '{"id":"create","b":"b"}'}, false)).thenResolve(okeStatus)
-      td.replace(api, 'post', post)
-      td.replace(EntityToFormMapper, 'generateForm', rowForm)
+      // mock save
+      const save = td.function('repository.save')
+      td.when(save({id: 'update', a: 'a'}, ['field'], tableId, rowId)).thenResolve()
+      td.when(save({id: 'create', b: 'b'}, ['field'], tableId, null)).thenResolve()
+      td.replace(repository, 'save', save)
 
       wrapper = shallow(DataRowEdit, {
         propsData: {
           dataTableId: tableId,
           dataRowId: rowId
-        }
+        },
       })
     })
 
     it('onValueChanged should update the formData', (done) => {
+      // eslint-disable-next-line
+      const formUpdate = {"foo": "bar"}
       wrapper.vm.onValueChanged(formUpdate)
       expect(wrapper.vm.formData).to.deep.equal(formUpdate)
       done()
@@ -104,6 +105,7 @@ describe('DataRowEdit component', () => {
 
     it('onSubmit should post the form data formData', (done) => {
       wrapper.setData({formData: {id: 'update', a: 'a'}})
+      wrapper.setData({formFields: ['field']})
       wrapper.vm.onSubmit()
       done()
     })
@@ -111,6 +113,7 @@ describe('DataRowEdit component', () => {
     it('onSubmit when no rowId is set should trigger the create call', (done) => {
       wrapper.setData({dataRowId: null})
       wrapper.setData({formData: {id: 'create', b: 'b'}})
+      wrapper.setData({formFields: ['field']})
       wrapper.vm.onSubmit()
       done()
     })
@@ -154,45 +157,47 @@ describe('DataRowEdit component', () => {
       expect(wrapper.vm.formData).to.deep.equal({foo: 'bar'})
       expect(wrapper.vm.showForm).to.equal(true)
     })
-
-    it('parseEditResponse should transform the editResponse to an object usable by the form component', () => {
-      const mockEditResponse = {
-        _meta: {
-          label: 'label',
-          foo: 'bar'
-        },
-        _href: 'http://foo.bar.com',
-        a: 'a',
-        b: 'b'
-      }
-      const result = wrapper.vm.parseEditResponse(mockEditResponse)
-      const expected = {
-        _meta: mockEditResponse._meta,
-        rowData: {
-          a: 'a',
-          b: 'b'
-        }
-      }
-      expect(result).to.deep.equal(expected)
-    })
   })
 
   describe('created', () => {
-    it('should when rowId is set fetch the data to be edited, parse the response and initialize the form', (done) => {
-      const getRowDataResponse = {
-        _href: 'some-href',
-        _meta: {
-          label: 'my-row-data'
-        },
-        foo: 'bar',
-        flub: 'blaf'
-      }
+    let mappedCreateData = {
+      formFields: ['a'],
+      formData: {a: 'b'},
+      formLabel: 'form label'
+    }
+    let mappedUpdateData = {
+      formFields: ['a'],
+      formData: {b: 'c'},
+      formLabel: 'form label'
+    }
 
+    beforeEach(function () {
       td.reset()
-      const get = td.function('api.get')
-      td.when(get('/api/v2/' + tableId + '/' + rowId)).thenResolve(getRowDataResponse)
-      td.replace(api, 'get', get)
-      td.replace(EntityToFormMapper, 'generateForm', rowForm)
+
+      const fetch = td.function('repository.fetch')
+      td.when(fetch(tableId, rowId)).thenResolve(mappedUpdateData)
+      td.when(fetch(tableId, null)).thenResolve(mappedCreateData)
+      td.replace(repository, 'fetch', fetch)
+    })
+
+    it('when rowId is not set fetch the data structure and initialize the form', (done) => {
+      const wrapper = shallow(DataRowEdit, {
+        propsData: {
+          dataTableId: tableId
+        }
+      })
+
+      wrapper.vm.$nextTick(() => { // resolve then
+        wrapper.vm.$nextTick(() => { // update the model
+          expect(wrapper.vm.formFields).to.deep.equal(['a'])
+          expect(wrapper.vm.formData).to.deep.equal({a: 'b'})
+          expect(wrapper.vm.showForm).to.equal(true)
+          done()
+        })
+      })
+    })
+
+    it('should when rowId is set fetch the data to be edited, and initialize the form', (done) => {
 
       const wrapper = shallow(DataRowEdit, {
         propsData: {
@@ -211,44 +216,5 @@ describe('DataRowEdit component', () => {
       })
     })
 
-    it('when rowId is not set fetch the data structure, parse the response and initialize the form', (done) => {
-      const createMock = function () {
-        return {
-          formFields: ['a'],
-          formData: {}
-        }
-      }
-      td.replace(EntityToFormMapper, 'generateForm', createMock)
-      td.reset()
-      const get = td.function('api.get')
-      const response = {
-        meta: {
-          label: 'label',
-          foo: 'bar',
-          attributes: [
-            { readOnly: true },
-            { readOnly: false },
-            {}
-          ]
-        },
-        href: 'http://foo.bar.com'
-      }
-      td.when(get('/api/v2/' + tableId + '?num=0')).thenResolve(response)
-      td.replace(api, 'get', get)
-      td.replace(EntityToFormMapper, 'generateForm', rowForm)
-      const wrapper = shallow(DataRowEdit, {
-        propsData: {
-          dataTableId: tableId
-        }
-      })
-
-      wrapper.vm.$nextTick(() => { // resolve then
-        wrapper.vm.$nextTick(() => { // update the model
-          expect(wrapper.vm.formFields[0]).to.deep.equal('a')
-          expect(wrapper.vm.showForm).to.equal(true)
-          done()
-        })
-      })
-    })
   })
 })
