@@ -1,6 +1,10 @@
 import { EntityToFormMapper } from '@molgenis/molgenis-ui-form'
 import api from '@molgenis/molgenis-api-client'
 
+const entityMapperSettings = {
+  showNonVisibleAttributes: true
+}
+
 const isFileIncluded = (formData, formFields) => {
   const fieldsWithFile = formFields
     .filter((field) => field.type === 'file')
@@ -50,7 +54,7 @@ const parseEditResponse = (response) => {
 const fetchForCreate = (tableId) => {
   return new Promise((resolve, reject) => {
     api.get('/api/v2/' + tableId + '?num=0').then((response) => {
-      const mappedData = EntityToFormMapper.generateForm(response.meta, {}, { mapperMode: 'CREATE' })
+      const mappedData = EntityToFormMapper.generateForm(response.meta, {}, { mapperMode: 'CREATE', ...entityMapperSettings })
       resolve({formLabel: response.meta.label, ...mappedData})
     }, reject)
   })
@@ -60,7 +64,7 @@ const fetchForUpdate = (tableId, rowId) => {
   return new Promise((resolve, reject) => {
     api.get('/api/v2/' + tableId + '/' + rowId).then((response) => {
       const {_meta, rowData} = parseEditResponse(response)
-      const mappedData = EntityToFormMapper.generateForm(_meta, rowData, { mapperMode: 'UPDATE' })
+      const mappedData = EntityToFormMapper.generateForm(_meta, rowData, { mapperMode: 'UPDATE', ...entityMapperSettings })
       resolve({formLabel: response._meta.label, ...mappedData})
     }, reject)
   })
