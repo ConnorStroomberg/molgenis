@@ -1,9 +1,9 @@
 <template>
-  <div class="container">
+  <div>
 
     <toast></toast>
 
-    <div class="row mb-3  ">
+    <div class="row mb-3">
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">

@@ -5,10 +5,10 @@ import SecurityApp from './SecurityApp'
 import GroupsListing from '@/security/components/GroupsListing'
 import GroupCreate from '@/security/components/GroupCreate'
 import GroupDetail from '@/security/components/GroupDetail'
-import GroupData from '@/security/components/GroupData'
 import GroupMembers from '@/security/components/GroupMembers'
 import MemberAdd from '@/security/components/MemberAdd'
 import MemberDetail from '@/security/components/MemberDetail'
+import DataNavigator from '@/data/components/DataNavigator'
 import i18n from '@molgenis/molgenis-i18n-js'
 
 import BootstrapVue from 'bootstrap-vue'
@@ -42,7 +42,7 @@ const router = new Router({
       component: GroupDetail,
       children: [
         { path: '', redirect: 'data' },
-        { path: 'data', name: 'groupData', props: true, component: GroupData },
+        { path: 'data', name: 'groupData', props: true, component: DataNavigator },
         { path: 'member', name: 'groupMembers', props: true, component: GroupMembers }
       ]
     },
@@ -69,7 +69,7 @@ const router = new Router({
 Vue.use(i18n, {
   lng: lng,
   fallbackLng: fallbackLng,
-  namespace: ['security-ui'],
+  namespace: ['security-ui', 'navigator'],
   callback () {
     /* eslint-disable no-new */
     new Vue({
