@@ -2,11 +2,13 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import store from './store'
 import SecurityApp from './SecurityApp'
-import GroupOverview from './components/GroupOverview'
-import GroupCreate from './components/GroupCreate'
-import GroupDetail from './components/GroupDetail'
-import MemberAdd from './components/MemberAdd'
-import MemberDetail from './components/MemberDetail'
+import GroupsListing from '@/security/components/GroupsListing'
+import GroupCreate from '@/security/components/GroupCreate'
+import GroupDetail from '@/security/components/GroupDetail'
+import GroupData from '@/security/components/GroupData'
+import GroupMembers from '@/security/components/GroupMembers'
+import MemberAdd from '@/security/components/MemberAdd'
+import MemberDetail from '@/security/components/MemberDetail'
 import i18n from '@molgenis/molgenis-i18n-js'
 
 import BootstrapVue from 'bootstrap-vue'
@@ -21,11 +23,12 @@ const {lng, fallbackLng, baseUrl, isSuperUser} = window.__INITIAL_STATE__
 const router = new Router({
   mode: 'history',
   base: baseUrl,
+  linkActiveClass: 'active',
   routes: [
     {
       path: '/group',
-      name: 'groupOverView',
-      component: GroupOverview
+      name: 'groupsListing',
+      component: GroupsListing
     },
     {
       path: '/group/create',
@@ -36,7 +39,12 @@ const router = new Router({
       path: '/group/:name',
       name: 'groupDetail',
       props: true,
-      component: GroupDetail
+      component: GroupDetail,
+      children: [
+        { path: '', redirect: 'data' },
+        { path: 'data', name: 'groupData', props: true, component: GroupData },
+        { path: 'member', name: 'groupMembers', props: true, component: GroupMembers }
+      ]
     },
     {
       path: '/group/:groupName/addMember',

@@ -99,7 +99,7 @@
         const createGroupCommand = {groupIdentifier: this.groupIdentifier, name: this.groupName}
         this.$store.dispatch('createGroup', createGroupCommand)
           .then(() => {
-            this.$router.push({name: 'groupOverView'})
+            this.$router.push({name: 'groupsListing'})
           }, () => {
             this.isCreating = !this.isCreating
           })

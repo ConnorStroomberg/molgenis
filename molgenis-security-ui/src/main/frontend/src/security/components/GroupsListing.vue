@@ -3,13 +3,7 @@
 
     <toast></toast>
 
-    <div class="row mb-3  ">
-      <div class="col">
-        <h1>{{ 'security-ui-groups-page-title' | i18n }}</h1>
-      </div>
-    </div>
-
-    <div class="row">
+    <div class="row mb-3">
       <div class="col" v-if="getLoginUser.isSuperUser">
         <button id="add-group-btn" @click="addGroup" type="button" class="btn btn-primary float-right"><i
           class="fa fa-plus"></i> {{'security-ui-add-group' | i18n}}
@@ -26,7 +20,7 @@
             <router-link
               v-for="group in sortedGroups"
               :key="group.name"
-              :to="{ name: 'groupDetail', params: { name: group.name } }"
+              :to="{ name: 'groupData', params: { name: group.name } }"
               class="list-group-item list-group-item-action">
               {{group.label}}
             </router-link>
@@ -50,7 +44,7 @@
   import Toast from './Toast'
 
   export default {
-    name: 'GroupOverview',
+    name: 'GroupsListing',
     computed: {
       ...mapGetters([
         'groups',
