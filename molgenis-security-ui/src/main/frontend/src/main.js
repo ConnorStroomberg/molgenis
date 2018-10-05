@@ -6,6 +6,7 @@ import GroupsListing from '@/security/components/GroupsListing'
 import GroupCreate from '@/security/components/GroupCreate'
 import GroupDetail from '@/security/components/GroupDetail'
 import GroupMembers from '@/security/components/GroupMembers'
+import GroupSettings from '@/security/components/GroupSettings'
 import MemberAdd from '@/security/components/MemberAdd'
 import MemberDetail from '@/security/components/MemberDetail'
 import DataNavigator from '@/data/components/DataNavigator'
@@ -43,7 +44,8 @@ const router = new Router({
       children: [
         { path: '', redirect: 'data' },
         { path: 'data', name: 'groupData', props: true, component: DataNavigator },
-        { path: 'member', name: 'groupMembers', props: true, component: GroupMembers }
+        { path: 'member', name: 'groupMembers', props: true, component: GroupMembers },
+        { path: 'settings', name: 'groupSettings', props: true, component: GroupSettings }
       ]
     },
     {

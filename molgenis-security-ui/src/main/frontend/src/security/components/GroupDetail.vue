@@ -19,14 +19,13 @@
     </div>
 
     <div class="row mb-3 ">
-      <div class="col-md">
-        <h2>{{ 'security-ui-members-page-title' | i18n }} {{name}}</h2>
-      </div>
-      <div class="col-md">
-        <b-button id="delete-group-btn" variant="danger" v-if="getLoginUser.isSuperUser"
-                  v-b-modal.deleteModal class="float-right">
-          <i :class="['fa', 'fa-trash', 'fa-lg', 'fa-enabled']"></i> Remove Group</b-button>
-      </div>
+      <!--<div class="col-md">-->
+        <!--<router-link :to="{ name: 'groupsListing' }" class="btn float-right"><</router-link>-->
+      <!--</div>-->
+      <!--<div class="col-md">-->
+        <!--<h2>{{ 'security-ui-members-page-title' | i18n }} {{name}}</h2>-->
+      <!--</div>-->
+
     </div>
 
     <ul class="nav nav-tabs mb-3">
@@ -36,14 +35,13 @@
       <li class="nav-item">
         <router-link :to="{ name: 'groupMembers' }" class="nav-link">Members</router-link>
       </li>
+      <li class="nav-item">
+        <router-link :to="{ name: 'groupSettings' }" class="nav-link">Settings</router-link>
+      </li>
     </ul>
 
     <router-view></router-view>
 
-    <b-modal id="deleteModal" ok-variant="danger" cancel-variant="secondary"
-             :title="$t('security-ui-delete-confirmation-title')" :ok-title="$t('security-ui-delete-confirmation-ok-text')" :cancel-title="$t('security-ui-delete-confirmation-cancel-text')" @ok="deleteGroup">
-      {{ 'security-ui-delete-confirmation-text' | i18n }}
-    </b-modal>
   </div>
 </template>
 
@@ -81,12 +79,6 @@
       addMember () {
         this.clearToast()
         this.$router.push({name: 'addMember', params: {groupName: this.name}})
-      },
-      deleteGroup () {
-        this.$store.dispatch('deleteGroup', {groupName: this.name})
-          .then(() => {
-            this.$router.push({name: 'groupOverView'})
-          })
       }
     },
     created () {

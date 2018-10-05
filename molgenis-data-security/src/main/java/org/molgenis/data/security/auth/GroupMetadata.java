@@ -87,6 +87,8 @@ public class GroupMetadata extends SystemEntityType {
         .setReadOnly(true)
         .setCascadeDelete(true)
         .setUnique(true);
+
+    setRowLevelSecured(true);
   }
 
   public void setRoleMetadata(RoleMetadata roleMetadata) {

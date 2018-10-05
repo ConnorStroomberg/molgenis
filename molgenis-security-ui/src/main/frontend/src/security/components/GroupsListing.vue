@@ -3,12 +3,15 @@
 
     <toast></toast>
 
-    <div class="row mb-3">
+    <div class="row justify-content-center">
+        <h2 class="mt-2">{{'security-ui-groups-header' | i18n}}</h2>
+    </div>
+
+    <div class="row mb-1">
       <div class="col" v-if="getLoginUser.isSuperUser">
-        <button id="add-group-btn" @click="addGroup" type="button" class="btn btn-primary float-right"><i
+        <button id="add-group-btn" @click="addGroup" type="button" class="btn btn-outline-primary float-right"><i
           class="fa fa-plus"></i> {{'security-ui-add-group' | i18n}}
         </button>
-        <h3 class="mt-2">{{'security-ui-groups-header' | i18n}}</h3>
       </div>
     </div>
 

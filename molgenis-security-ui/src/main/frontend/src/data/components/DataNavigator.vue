@@ -121,6 +121,12 @@
 
   export default {
     name: 'DataNavigator',
+    props: {
+      name: {
+        type: String,
+        required: false
+      }
+    },
     data () {
       return {
         fields: {
@@ -147,7 +153,7 @@
         this.$store.commit(RESET_PATH)
         const query = this.$store.state.query
         if (query === undefined || query === null || query === '') {
-          this.$store.dispatch(RESET_STATE)
+          this.$store.dispatch(RESET_STATE, this.name)
         } else {
           this.$store.dispatch(QUERY_PACKAGES, query)
           this.$store.dispatch(QUERY_ENTITIES, query)
@@ -165,7 +171,7 @@
       },
       reset: function () {
         this.$store.commit(SET_QUERY, undefined)
-        this.$store.dispatch(RESET_STATE)
+        this.$store.dispatch(RESET_STATE, this.name)
       },
       toggleSelected: function (item, checked) {
         if (checked) {
@@ -226,7 +232,7 @@
       }
     },
     mounted: function () {
-      this.$route.params.package ? this.selectPackage(this.$route.params.package) : this.$store.dispatch(RESET_STATE)
+      this.$route.params.package ? this.selectPackage(this.$route.params.package) : this.$store.dispatch(RESET_STATE, this.name)
     },
     watch: {
       '$route' (to, from) {

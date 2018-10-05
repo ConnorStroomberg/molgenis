@@ -195,17 +195,15 @@ export default {
       commit(SET_ERROR, error)
     })
   },
-  [RESET_STATE] ({commit}: { commit: Function }) {
-    api.get(PACKAGE_ENDPOINT + '?sort=label&num=1000&&q=parent==%22%22').then(response => {
-      const visibleRootPackages = filterNonVisiblePackages(response.items)
-      commit(SET_PACKAGES, visibleRootPackages)
+  [RESET_STATE] ({commit}: { commit: Function }, group: string) {
+    api.get(PACKAGE_ENDPOINT + '?sort=label&num=1000&&q=parent==' + group).then(response => {
+      commit(SET_PACKAGES, filterNonVisiblePackages(response.items))
     }, error => {
       commit(SET_ERROR, error)
     })
-    api.get(ENTITY_TYPE_ENDPOINT + '?sort=label&num=1000&&q=isAbstract==false;package==%22%22').then(response => {
+    api.get(ENTITY_TYPE_ENDPOINT + '?sort=label&num=1000&&q=isAbstract==false;package==' + group).then(response => {
       const entities = response.items.map(toEntity)
-      const visibleRootEntities = filterNonVisibleEntities(entities)
-      commit(SET_ENTITIES, visibleRootEntities)
+      commit(SET_ENTITIES, filterNonVisibleEntities(entities))
     }, error => {
       commit(SET_ERROR, error)
     })

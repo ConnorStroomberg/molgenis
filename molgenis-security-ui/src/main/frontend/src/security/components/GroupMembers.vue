@@ -1,10 +1,10 @@
 <template>
-  <div class="container-fluid">
+  <div >
 
     <div class="row">
       <div class="col">
         <button id="add-member-btn" v-if="canAddMember" @click="addMember" type="button"
-                class="btn btn-primary"><i class="fa fa-plus"></i> {{'security-ui-add-member' | i18n}}
+                class="btn btn-outline-primary float-right"><i class="fa fa-plus"></i> {{'security-ui-add-member' | i18n}}
         </button>
       </div>
     </div>

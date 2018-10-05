@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div >
 
     <toast></toast>
 
@@ -35,7 +35,7 @@
 
           </div>
 
-          <router-link :to="{name: 'groupDetail', params: { name: groupName }}">
+          <router-link :to="{name: 'groupMembers', params: { name: groupName }}">
             <a href="#" class="btn btn-secondary" role="button">{{ 'security-ui-btn-cancel' | i18n }}</a>
           </router-link>
 
@@ -108,7 +108,7 @@
         const addMemberCommand = { username: this.username, roleName: this.roleName }
         this.$store.dispatch('addMember', {groupName: this.groupName, addMemberCommand})
           .then(() => {
-            this.$router.push({ name: 'groupDetail', params: { name: this.groupName } })
+            this.$router.push({ name: 'groupMembers', params: { name: this.groupName } })
           }, () => {
             this.isAdding = !this.isAdding
           })

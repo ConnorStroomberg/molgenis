@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div>
 
     <toast></toast>
 
@@ -8,12 +8,12 @@
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb">
             <li class="breadcrumb-item">
-              <router-link :to="{ name: 'groupOverView' }" class="text-capitalize">{{ 'security-ui-breadcrumb-groups' |
+              <router-link :to="{ name: 'groupsListing' }" class="text-capitalize">{{ 'security-ui-breadcrumb-groups' |
                 i18n }}
               </router-link>
             </li>
             <li class="breadcrumb-item">
-              <router-link :to="{ name: 'groupDetail', params: { name: groupName } }" class="text-capitalize">{{groupName}}</router-link>
+              <router-link :to="{ name: 'groupMembers', params: { name: groupName } }" class="text-capitalize">{{groupName}}</router-link>
             </li>
             <li class="breadcrumb-item active text-capitalize" aria-current="page">{{memberName}}</li>
           </ol>
@@ -178,7 +178,7 @@
         this.isRemoving = !this.isRemoving
         this.$store.dispatch('removeMember', {groupName: this.groupName, memberName: this.memberName})
           .then(() => {
-            this.$router.push({ name: 'groupDetail', params: { name: this.groupName } })
+            this.$router.push({ name: 'groupMembers', params: { name: this.groupName } })
           }, () => {
             this.isRemoving = !this.isRemoving
           })
@@ -188,7 +188,7 @@
         const updateMemberCommand = { roleName: this.selectedRole }
         this.$store.dispatch('updateMember', {groupName: this.groupName, memberName: this.memberName, updateMemberCommand})
           .then(() => {
-            this.$router.push({ name: 'groupDetail', params: { name: this.groupName } })
+            this.$router.push({ name: 'groupMembers', params: { name: this.groupName } })
           }, () => {
             this.isUpdating = !this.isUpdating
           })
