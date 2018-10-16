@@ -22,6 +22,8 @@ public interface OneClickImporterService {
    */
   DataCollection buildDataCollectionFromCsv(String dataCollectionName, List<String[]> lines);
 
+  DataCollection buildDataCollectionFromSav(String dataCollectionName);
+
   /**
    * Test is values are unique within column. A column containing null values is considered to be
    * non-unique

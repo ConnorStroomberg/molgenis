@@ -26,6 +26,7 @@ import org.molgenis.oneclickimporter.service.EntityService;
 import org.molgenis.oneclickimporter.service.ExcelService;
 import org.molgenis.oneclickimporter.service.OneClickImporterNamingService;
 import org.molgenis.oneclickimporter.service.OneClickImporterService;
+import org.molgenis.oneclickimporter.service.SpssService;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -33,6 +34,8 @@ public class OneClickImportJobTest {
   @Mock private ExcelService excelService;
 
   @Mock private CsvService csvService;
+
+  @Mock private SpssService spssService;
 
   @Mock private OneClickImporterService oneClickImporterService;
 
@@ -80,7 +83,8 @@ public class OneClickImportJobTest {
             oneClickImporterService,
             oneClickImporterNamingService,
             entityService,
-            fileStore);
+            fileStore,
+            spssService);
 
     oneClickImporterJob.getEntityType(progress, filename);
 
@@ -123,7 +127,8 @@ public class OneClickImportJobTest {
             oneClickImporterService,
             oneClickImporterNamingService,
             entityService,
-            fileStore);
+            fileStore,
+            spssService);
 
     oneClickImporterJob.getEntityType(progress, filename);
 
@@ -218,7 +223,8 @@ public class OneClickImportJobTest {
             oneClickImporterService,
             oneClickImporterNamingService,
             entityService,
-            fileStore);
+            fileStore,
+            spssService);
 
     oneClickImporterJob.getEntityType(progress, filename);
 
@@ -267,7 +273,8 @@ public class OneClickImportJobTest {
             oneClickImporterService,
             oneClickImporterNamingService,
             entityService,
-            fileStore);
+            fileStore,
+            spssService);
 
     oneClickImporterJob.getEntityType(progress, filename);
   }
@@ -291,7 +298,8 @@ public class OneClickImportJobTest {
             oneClickImporterService,
             oneClickImporterNamingService,
             entityService,
-            fileStore);
+            fileStore,
+            spssService);
 
     oneClickImporterJob.getEntityType(progress, filename);
   }
@@ -299,7 +307,7 @@ public class OneClickImportJobTest {
   @Test(
       expectedExceptions = UnknownFileTypeException.class,
       expectedExceptionsMessageRegExp =
-          "File \\[unsupported-file-type.nft\\] does not have a valid extension, supported: \\[csv, xlsx, zip, xls\\]")
+          "File \\[unsupported-file-type.nft\\] does not have a valid extension, supported: \\[csv, xlsx, zip, xls, sav\\]")
   public void testInvalidFileType()
       throws InvalidFormatException, IOException, URISyntaxException, UnknownFileTypeException,
           EmptySheetException {
@@ -316,7 +324,8 @@ public class OneClickImportJobTest {
             oneClickImporterService,
             oneClickImporterNamingService,
             entityService,
-            fileStore);
+            fileStore,
+            spssService);
 
     oneClickImporterJob.getEntityType(progress, filename);
   }

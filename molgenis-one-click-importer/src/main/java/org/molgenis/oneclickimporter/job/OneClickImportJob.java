@@ -22,6 +22,7 @@ import org.molgenis.oneclickimporter.service.EntityService;
 import org.molgenis.oneclickimporter.service.ExcelService;
 import org.molgenis.oneclickimporter.service.OneClickImporterNamingService;
 import org.molgenis.oneclickimporter.service.OneClickImporterService;
+import org.molgenis.oneclickimporter.service.SpssService;
 import org.molgenis.util.file.UnzipException;
 import org.molgenis.util.file.ZipFileUtil;
 import org.springframework.stereotype.Component;
@@ -31,24 +32,27 @@ import org.springframework.transaction.annotation.Transactional;
 public class OneClickImportJob {
   private final ExcelService excelService;
   private final CsvService csvService;
+  private final SpssService spssService;
   private final OneClickImporterService oneClickImporterService;
   private final OneClickImporterNamingService oneClickImporterNamingService;
   private final EntityService entityService;
   private final FileStore fileStore;
 
-  public OneClickImportJob(
+  OneClickImportJob(
       ExcelService excelService,
       CsvService csvService,
       OneClickImporterService oneClickImporterService,
       OneClickImporterNamingService oneClickImporterNamingService,
       EntityService entityService,
-      FileStore fileStore) {
+      FileStore fileStore,
+      SpssService spssService) {
     this.excelService = requireNonNull(excelService);
     this.csvService = requireNonNull(csvService);
     this.oneClickImporterService = requireNonNull(oneClickImporterService);
     this.oneClickImporterNamingService = requireNonNull(oneClickImporterNamingService);
     this.entityService = requireNonNull(entityService);
     this.fileStore = requireNonNull(fileStore);
+    this.spssService = spssService;
   }
 
   @Transactional
@@ -56,18 +60,23 @@ public class OneClickImportJob {
       throws UnknownFileTypeException, IOException, InvalidFormatException, EmptySheetException {
     File file = fileStore.getFile(filename);
     String fileExtension =
-        findExtensionFromPossibilities(filename, newHashSet("csv", "xlsx", "zip", "xls"));
+        findExtensionFromPossibilities(filename, newHashSet("csv", "xlsx", "zip", "xls", "sav"));
 
     progress.status("Preparing import");
     List<DataCollection> dataCollections = newArrayList();
     if (fileExtension == null) {
       throw new UnknownFileTypeException(
           String.format(
-              "File [%s] does not have a valid extension, supported: [csv, xlsx, zip, xls]",
+              "File [%s] does not have a valid extension, supported: [csv, xlsx, zip, xls, sav]",
               filename));
     } else if (fileExtension.equals("xls") || fileExtension.equals("xlsx")) {
       List<Sheet> sheets = excelService.buildExcelSheetsFromFile(file);
       dataCollections.addAll(oneClickImporterService.buildDataCollectionsFromExcel(sheets));
+    } else if (fileExtension.equals("sav")) {
+      final String collectionName =
+          oneClickImporterNamingService.createValidIdFromFileName(filename);
+      DataCollection dataCollection = spssService.fromSavFile(file, collectionName);
+      dataCollections.add(dataCollection);
     } else if (fileExtension.equals("csv")) {
       List<String[]> lines = csvService.buildLinesFromFile(file);
       dataCollections.add(

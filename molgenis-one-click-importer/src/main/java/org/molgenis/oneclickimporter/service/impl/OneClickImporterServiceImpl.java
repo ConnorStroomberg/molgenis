@@ -67,6 +67,11 @@ public class OneClickImporterServiceImpl implements OneClickImporterService {
   }
 
   @Override
+  public DataCollection buildDataCollectionFromSav(String dataCollectionName) {
+    return null;
+  }
+
+  @Override
   public boolean hasUniqueValues(Column column) {
     List<Object> dataValues = column.getDataValues();
 

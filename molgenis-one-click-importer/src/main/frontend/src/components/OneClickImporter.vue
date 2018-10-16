@@ -10,10 +10,10 @@
               class="form-control"
               ref="fileInput"
               type="file"
-              accept=".csv, .zip, .xls, .xlsx, text/csv, application/zip, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+              accept=".csv, .zip, .xls, .xlsx, text/csv, .sav, application/zip,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
               @change="importFile"/>
             <div class="supported-types">
-              <span class="text-muted"><em>{{ 'file-types' | i18n }}: XLSX, XLS, CSV</em></span>
+              <span class="text-muted"><em>{{ 'file-types' | i18n }}: XLSX, XLS, CSV, SAV</em></span>
             </div>
           </div>
         </form>
