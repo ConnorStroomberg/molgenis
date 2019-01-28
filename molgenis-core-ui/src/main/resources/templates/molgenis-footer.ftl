@@ -42,17 +42,19 @@
     <#-- VUE -->
     <div id="molgenis-footer"></div>
 
-    <script type=text/javascript>
+    <script type="text/javascript">
         window.molgenisFooter = {
-                <#if app_settings.footer??>additionalMessage: '${app_settings.footer}',</#if>
-                <#if molgenis_version??>version: '${molgenis_version}',</#if>
-                <#if molgenis_build_date??>buildDate: '${molgenis_build_date}',</#if>
-                <#if molgenis_app_version??>appVersion: '${molgenis_app_version}',</#if>
+            <#if app_settings.footer??>additionalMessage: '${app_settings.footer}',</#if>
+            <#if molgenis_version??>version: '${molgenis_version}',</#if>
+            <#if molgenis_build_date??>buildDate: '${molgenis_build_date}',</#if>
+            <#if molgenis_app_version??>appVersion: '${molgenis_app_version},'</#if>
+            molgenisSite: 'http://www.molgenis.org',
+            pubmed1: 'https://www.ncbi.nlm.nih.gov/pubmed/21210979',
+            pubmed2: 'https://www.ncbi.nlm.nih.gov/pubmed/17297480'
         }
     </script>
 
-    <#-- Include the Vue version of the molgenis footer  -->
-    <script type=text/javascript src="<@resource_href "/js/bootstrap-4/footer/molgenis-footer.js"/>"></script>
+    <script type=text/javascript src="<@resource_href "/js/menu/context.umd.js"/>"></script>
 </#if>
 
 

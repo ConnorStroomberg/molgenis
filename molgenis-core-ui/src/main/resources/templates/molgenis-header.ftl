@@ -120,7 +120,6 @@
         <#-- Include the Vue version of the molgenis menu  -->
         <div id="molgenis-site-menu"></div>
 
-        <script type=text/javascript src="<@resource_href "/js/menu/context.umd.js"/>"></script>
     </#if>
 
 <#-- Start application content -->
