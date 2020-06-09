@@ -1,12 +1,12 @@
 package org.molgenis.app;
 
+import graphql.spring.web.servlet.GraphQLEndpointConfiguration;
 import org.molgenis.core.ui.MolgenisWebAppConfig;
 import org.molgenis.core.ui.data.config.HttpClientConfig;
 import org.molgenis.core.ui.freemarker.RepositoryTemplateLoader;
 import org.molgenis.data.DataService;
 import org.molgenis.data.elasticsearch.client.ElasticsearchConfig;
 import org.molgenis.data.postgresql.DatabaseConfig;
-import org.molgenis.web.converter.GsonConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +28,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
   DatabaseConfig.class,
   HttpClientConfig.class,
   ElasticsearchConfig.class,
-  GsonConfig.class
+  GraphQLEndpointConfiguration.class
 })
 public class WebAppConfig extends MolgenisWebAppConfig {
   @Autowired private DataService dataService;

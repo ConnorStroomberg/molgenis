@@ -10,6 +10,7 @@ import static org.molgenis.core.framework.ui.ResourcePathPatterns.PATTERN_SWAGGE
 import static org.molgenis.core.ui.FileStoreConstants.FILE_STORE_PLUGIN_APPS_PATH;
 import static org.molgenis.security.UriConstants.PATH_SEGMENT_APPS;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import freemarker.cache.ClassTemplateLoader;
@@ -178,7 +179,7 @@ public abstract class MolgenisWebAppConfig implements WebMvcConfigurer {
   private String environment;
 
   @Override
-  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+  public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
     converters.add(gsonHttpMessageConverter);
     converters.add(new BufferedImageHttpMessageConverter());
     converters.add(new CsvHttpMessageConverter());
@@ -368,5 +369,10 @@ public abstract class MolgenisWebAppConfig implements WebMvcConfigurer {
   @Bean
   public ApplicationContextProvider applicationContextProvider() {
     return new ApplicationContextProvider();
+  }
+
+  @Bean
+  public ObjectMapper objectMapper() {
+    return new ObjectMapper();
   }
 }
